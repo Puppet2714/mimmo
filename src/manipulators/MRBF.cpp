@@ -521,13 +521,8 @@ MRBF::execute(){
 
     //if m_filter is active;
     if(m_bfilter){
-        int nV = m_geometry->getNVertex();
-        if (m_filter.size() != nV){
-            m_filter.clear();
-            for (auto vertex : m_geometry->getVertices()){
-                m_filter.insert(vertex.getId(), 1.0);
-            }
-        }
+
+        checkFilter();
 
         long int ID;
         for (auto & vertex : m_geometry->getVertices()){
@@ -535,6 +530,9 @@ MRBF::execute(){
             m_displ[ID] = m_displ[ID] * m_filter[ID];
         }
     }
+
+    m_displ.setGeometry(getGeometry());
+    m_displ.setName("M_GDISPLS");
 
 };
 
@@ -544,7 +542,7 @@ MRBF::execute(){
 void
 MRBF::apply(){
 
-    if (getGeometry() == NULL) return;
+    if (getGeometry() == NULL || m_displ.getGeometry() != getGeometry()) return;
     darray3E vertexcoords;
     long int ID;
     for (auto vertex : m_geometry->getVertices()){
@@ -554,6 +552,22 @@ MRBF::apply(){
         getGeometry()->modifyVertex(vertexcoords, ID);
     }
 
+}
+
+/*!
+ * Check if the filter is related to the target geometry.
+ * If not create a unitary filter field.
+ */
+void
+MRBF::checkFilter(){
+    if (m_filter.getGeometry() != getGeometry()){
+        m_filter.clear();
+        m_filter.setGeometry(m_geometry);
+        m_filter.setName("M_FILTER");
+        for (auto vertex : m_geometry->getVertices()){
+            m_filter.insert(vertex.getId(), 1.0);
+        }
+    }
 }
 
 /*!
