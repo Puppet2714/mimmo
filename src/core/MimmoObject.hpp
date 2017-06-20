@@ -102,6 +102,8 @@ public:
     bitpit::PiercedVector<bitpit::Cell> &           getCells();
     const bitpit::PiercedVector<bitpit::Cell> &     getCells() const;
 
+    livector1D                                      getCellsIds();
+
     bitpit::PatchKernel*                            getPatch();
 
 //    livector1D&                                     getMapData();
