@@ -70,10 +70,11 @@ if(BUILD_LAURATESTS)
 #         set(LAURA_LIBRARY_TYPE "SHARED")
 #         set(LAURA_PIC_FLAG TRUE)
 #     else()
-#         set(LAURA_LIBRARY_TYPE "STATIC")
+         set(LAURA_LIBRARY_TYPE "STATIC")
 #         set(LAURA_PIC_FLAG FALSE)
 #     endif()
-    add_library(${LAURA_LIBRARY} "STATIC" ${LAURACODE})
+    set(LAURA_LIBRARY "mimmoEXTLAURA")
+    add_library(${LAURA_LIBRARY} ${LAURA_LIBRARY_TYPE} ${LAURACODE})
     
 #     set_target_properties(${LAURA_LIBRARY} PROPERTIES POSITION_INDEPENDENT_CODE ${PIC_FLAG})
 #     set_target_properties(${LAURA_LIBRARY} PROPERTIES VERSION "${MIMMO_VERSION}"
