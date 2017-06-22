@@ -279,7 +279,7 @@ StitchGeometry::execute(){
         //optional vars;
         long vId, cId;
         short PID;
-        bitpit::ElementInfo::Type eltype;
+        bitpit::ElementType eltype;
 
         for(auto &obj : m_extgeo){
 

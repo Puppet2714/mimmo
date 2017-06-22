@@ -107,12 +107,12 @@ IOCGNS::setDefaults(){
     m_storedBC  = new BCCGNS;
 
     //Fill converters
-    m_storedInfo->mcg_typeconverter[bitpit::ElementInfo::Type::TRIANGLE] = CG_ElementType_t::CG_TRI_3;
-    m_storedInfo->mcg_typeconverter[bitpit::ElementInfo::Type::QUAD] = CG_ElementType_t::CG_QUAD_4;
-    m_storedInfo->mcg_typeconverter[bitpit::ElementInfo::Type::TETRA] = CG_ElementType_t::CG_TETRA_4;
-    m_storedInfo->mcg_typeconverter[bitpit::ElementInfo::Type::PYRAMID] = CG_ElementType_t::CG_PYRA_5;
-    m_storedInfo->mcg_typeconverter[bitpit::ElementInfo::Type::WEDGE] = CG_ElementType_t::CG_PENTA_6;
-    m_storedInfo->mcg_typeconverter[bitpit::ElementInfo::Type::HEXAHEDRON] = CG_ElementType_t::CG_HEXA_8;
+    m_storedInfo->mcg_typeconverter[bitpit::ElementType::TRIANGLE] = CG_ElementType_t::CG_TRI_3;
+    m_storedInfo->mcg_typeconverter[bitpit::ElementType::QUAD] = CG_ElementType_t::CG_QUAD_4;
+    m_storedInfo->mcg_typeconverter[bitpit::ElementType::TETRA] = CG_ElementType_t::CG_TETRA_4;
+    m_storedInfo->mcg_typeconverter[bitpit::ElementType::PYRAMID] = CG_ElementType_t::CG_PYRA_5;
+    m_storedInfo->mcg_typeconverter[bitpit::ElementType::WEDGE] = CG_ElementType_t::CG_PENTA_6;
+    m_storedInfo->mcg_typeconverter[bitpit::ElementType::HEXAHEDRON] = CG_ElementType_t::CG_HEXA_8;
 
     m_storedInfo->mcg_typetostring[CG_ElementType_t::CG_TRI_3] = "Elem_tri";
     m_storedInfo->mcg_typetostring[CG_ElementType_t::CG_QUAD_4] = "Elem_quad";
@@ -568,7 +568,7 @@ IOCGNS::read(){
         idsection++;
 
         livector1D lConn;
-        bitpit::ElementInfo::Type btype;
+        bitpit::ElementType btype;
         short PID = 0;
         int size = conns[idsection].size();
 
@@ -581,7 +581,7 @@ IOCGNS::read(){
         case CGNS_ENUMV(TETRA_4):
         case CGNS_ENUMV(TETRA_10):
 
-        btype = bitpit::ElementInfo::Type::TETRA;
+        btype = bitpit::ElementType::TETRA;
         lConn.resize(4);
         for(int i=0; i<size; i+=4){
             for(int j=0; j<4; ++j){
@@ -596,7 +596,7 @@ IOCGNS::read(){
         case CGNS_ENUMV(PYRA_5):
         case CGNS_ENUMV(PYRA_14):
 
-        btype = bitpit::ElementInfo::Type::PYRAMID;
+        btype = bitpit::ElementType::PYRAMID;
         lConn.resize(5);
         for(int i=0; i<size; i+=5){
             for(int j=0; j<5; ++j){
@@ -612,7 +612,7 @@ IOCGNS::read(){
         case CGNS_ENUMV(PENTA_15):
         case CGNS_ENUMV(PENTA_18):
 
-        btype = bitpit::ElementInfo::Type::WEDGE;
+        btype = bitpit::ElementType::WEDGE;
         lConn.resize(6);
         for(int i=0; i<size; i+=6){
             for(int j=0; j<6; ++j){
@@ -629,7 +629,7 @@ IOCGNS::read(){
         case CGNS_ENUMV(HEXA_20):
         case CGNS_ENUMV(HEXA_27):
 
-        btype = bitpit::ElementInfo::Type::HEXAHEDRON;
+        btype = bitpit::ElementType::HEXAHEDRON;
         lConn.resize(8);
         for(int i=0; i<size; i+=8){
             for(int j=0; j<8; ++j){
@@ -644,7 +644,7 @@ IOCGNS::read(){
         case CGNS_ENUMV(TRI_3):
         case CGNS_ENUMV(TRI_6):
 
-        btype = bitpit::ElementInfo::Type::TRIANGLE;
+        btype = bitpit::ElementType::TRIANGLE;
         lConn.resize(3);
 
         for(int i=0; i<size; i+=3){
@@ -661,7 +661,7 @@ IOCGNS::read(){
         case CGNS_ENUMV(QUAD_8):
         case CGNS_ENUMV(QUAD_9):
 
-        btype = bitpit::ElementInfo::Type::QUAD;
+        btype = bitpit::ElementType::QUAD;
         lConn.resize(4);
         for(int i=0; i<size; i+=4){
             for(int j=0; j<4; ++j){
@@ -896,7 +896,7 @@ void
 IOCGNS::unpack3DElementsMixedConns(MimmoObject * patchVol, MimmoObject* patchSurf, ivector1D & conn, long & startId){
 
     livector1D lConn;
-    bitpit::ElementInfo::Type btype;
+    bitpit::ElementType btype;
     short PID=0;
     long id = startId;
     ivector1D::iterator it=conn.begin(), itE=conn.end();
@@ -910,7 +910,7 @@ IOCGNS::unpack3DElementsMixedConns(MimmoObject * patchVol, MimmoObject* patchSur
         case CGNS_ENUMV(TETRA_4):
         case CGNS_ENUMV(TETRA_10):
 
-        btype = bitpit::ElementInfo::Type::TETRA;
+        btype = bitpit::ElementType::TETRA;
         lConn.resize(4);
         for(int i=0; i<4; i++){
             lConn[i] = *it;
@@ -925,7 +925,7 @@ IOCGNS::unpack3DElementsMixedConns(MimmoObject * patchVol, MimmoObject* patchSur
         case CGNS_ENUMV(PYRA_5):
         case CGNS_ENUMV(PYRA_14):
 
-        btype = bitpit::ElementInfo::Type::PYRAMID;
+        btype = bitpit::ElementType::PYRAMID;
         lConn.resize(5);
         for(int i=0; i<5; i++){
             lConn[i] = *it;
@@ -941,7 +941,7 @@ IOCGNS::unpack3DElementsMixedConns(MimmoObject * patchVol, MimmoObject* patchSur
         case CGNS_ENUMV(PENTA_15):
         case CGNS_ENUMV(PENTA_18):
 
-        btype = bitpit::ElementInfo::Type::WEDGE;
+        btype = bitpit::ElementType::WEDGE;
         lConn.resize(6);
         for(int i=0; i<6; i++){
             lConn[i] = *it;
@@ -957,7 +957,7 @@ IOCGNS::unpack3DElementsMixedConns(MimmoObject * patchVol, MimmoObject* patchSur
         case CGNS_ENUMV(HEXA_20):
         case CGNS_ENUMV(HEXA_27):
 
-        btype = bitpit::ElementInfo::Type::HEXAHEDRON;
+        btype = bitpit::ElementType::HEXAHEDRON;
         lConn.resize(8);
         for(int i=0; i<8; i++){
             lConn[i] = *it;
@@ -982,7 +982,7 @@ IOCGNS::unpack3DElementsMixedConns(MimmoObject * patchVol, MimmoObject* patchSur
         case CGNS_ENUMV(TRI_3):
         case CGNS_ENUMV(TRI_6):
 
-        btype = bitpit::ElementInfo::Type::TRIANGLE;
+        btype = bitpit::ElementType::TRIANGLE;
         lConn.resize(3);
         for(int i=0; i<3; i++){
             lConn[i] = *it;
@@ -998,7 +998,7 @@ IOCGNS::unpack3DElementsMixedConns(MimmoObject * patchVol, MimmoObject* patchSur
         case CGNS_ENUMV(QUAD_8):
         case CGNS_ENUMV(QUAD_9):
 
-        btype = bitpit::ElementInfo::Type::QUAD;
+        btype = bitpit::ElementType::QUAD;
         lConn.resize(4);
         for(int i=0; i<4; i++){
             lConn[i] = *it;

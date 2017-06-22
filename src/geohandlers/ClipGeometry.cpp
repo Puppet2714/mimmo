@@ -218,7 +218,7 @@ ClipGeometry::execute(){
 
     long idV;
     int sizeCC;
-    bitpit::ElementInfo::Type eltype;
+    bitpit::ElementType eltype;
     int PID;
 
     if (getGeometry()->getType() != 3){
@@ -227,11 +227,12 @@ ClipGeometry::execute(){
             bitpit::Cell & cell = tri->getCell(idCell);
             eltype = cell.getType();
             sizeCC = cell.getVertexCount();
+            auto connCC = cell.getConnect();
             PID = cell.getPID();
             TT.resize(sizeCC);
 
             for(int i=0; i<sizeCC; ++i){
-                idV = cell.getVertex(i);
+                idV = connCC[i];
                 TT[i] = idV;
 
                 if(!mapV.exists(idV))temp->addVertex(tri->getVertexCoords(idV),idV);

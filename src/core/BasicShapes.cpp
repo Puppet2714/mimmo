@@ -522,10 +522,11 @@ bool BasicShape::isSimplexIncluded(bitpit::PatchKernel * tri, long int indexT){
 
   Cell & cell = tri->getCell(indexT);
   int nVertices = cell.getVertexCount();
+  auto cellconn = cell.getConnect();
   bool check = true;
   for(int i=0; i<nVertices; ++i){ 
 	//recover vertex index
-	check = check && isPointIncluded(tri, cell.getVertex(i)); 
+	check = check && isPointIncluded(tri, cellconn[i]); 
   }
   return(check);
 };
