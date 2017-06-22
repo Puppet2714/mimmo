@@ -59,7 +59,7 @@ int test4() {
 //     }
 //     short pid=0;
 //     for(auto & cc: conns){
-//         geo->addConnectedCell(cc,bitpit::ElementInfo::Type::QUAD, pid);
+//         geo->addConnectedCell(cc,bitpit::ElementType::QUAD, pid);
 //         ++pid;
 //     }
 //     
@@ -71,7 +71,7 @@ int test4() {
 //     writer->setFilename("planarquads_mimmo");
 //     writer->setFileType(FileType::SQVTUPLANAR);
 //     writer->setGeometry(geo);
-//     writer->setCodex(false);
+//     //writer->setCodex(false);
 //     writer->execute();
 //     
 //     delete geo;
@@ -87,7 +87,7 @@ int test4() {
     reader->execute();
     
     auto obj = reader->getGeometry();
-    
+    std::cout<<obj->getCompactPID()<<std::endl;
     obj->getPatch()->buildAdjacencies();
     obj->getPatch()->buildInterfaces();
     obj->getPatch()->update();
