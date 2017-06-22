@@ -478,9 +478,10 @@ void BvTree::computeBoundingBox(int inode)
     {
         cell = m_patch->getCell(m_elements[i].m_label);
         nV = cell.getVertexCount();
+        auto conn = cell.getConnect();
         for (int iV=0; iV<nV; ++iV )
         {
-            coords = m_patch->getVertexCoords(cell.getVertex(iV));
+            coords = m_patch->getVertexCoords(conn[iV]);
             for (int j=0; j<m_dim; ++j )
             {
                 node.m_minPoint[j] = std::min(node.m_minPoint[j], coords[j]);
@@ -695,10 +696,11 @@ double signedDistance(std::array<double,3> *P_, BvTree *bvtree_, long &id, std::
             id_ = bvtree_->m_elements[bvtree_->m_nodes[next].m_element[0]+ie].m_label;
             bitpit::Cell cell = spatch_->getCell(id_);
             nV = cell.getVertexCount();
+            auto cellconn = cell.getConnect();
             dvecarr3E VS(nV);
             for (int iV=0; iV<nV; ++iV)
             {
-                VS[iV] = spatch_->getVertexCoords(cell.getVertex(iV));
+                VS[iV] = spatch_->getVertexCoords(cellconn[iV]);
             }
 
             //signed distance only for patch with triangles or segments
@@ -741,10 +743,11 @@ double signedDistance(std::array<double,3> *P_, BvTree *bvtree_, long &id, std::
 
             bitpit::Cell cell = spatch_->getCell(id);
             nV = cell.getVertexCount();
+            auto cellconn = cell.getConnect();
             dvecarr3E VS(nV);
             for (int iV = 0; iV < nV; ++iV )
             {
-                VS[iV] = spatch_->getVertexCoords(cell.getVertex(iV));
+                VS[iV] = spatch_->getVertexCoords(cellconn[iV]);
             }
 
             //signed distance only for patch with triangles or segments
@@ -892,10 +895,11 @@ double distance(std::array<double,3> *P_, BvTree* bvtree_, long &id, double &r, 
             id_ = bvtree_->m_elements[bvtree_->m_nodes[next].m_element[0]+ie].m_label;
             bitpit::Cell cell = bvtree_->m_patch->getCell(id_);
             nV = cell.getVertexCount();
+            auto cellconn = cell.getConnect();
             dvecarr3E VS(nV);
             for (int iV = 0; iV < nV; ++iV )
             {
-                VS[iV] = bvtree_->m_patch->getVertexCoords(cell.getVertex(iV));
+                VS[iV] = bvtree_->m_patch->getVertexCoords(cellconn[iV]);
             }
 
             if ( nV == 3 )

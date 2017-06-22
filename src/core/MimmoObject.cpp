@@ -100,7 +100,7 @@ MimmoObject::MimmoObject(int type, dvecarr3E & vertex, ivector2D * connectivity,
         dynamic_cast<SurfUnstructured*> (m_patch)->setExpert(true);
     }
     
-    bitpit::ElementInfo::Type eltype = bitpit::ElementInfo::UNDEFINED;
+    bitpit::ElementType eltype = bitpit::ElementType::UNDEFINED;
     int sizeVert, sizeCell;
     
     sizeVert = vertex.size();
@@ -117,33 +117,33 @@ MimmoObject::MimmoObject(int type, dvecarr3E & vertex, ivector2D * connectivity,
         
         switch(m_type){
             case 1: 
-                if(sizeConn == 3)	eltype = bitpit::ElementInfo::TRIANGLE;
-                if(sizeConn == 4)	eltype = bitpit::ElementInfo::QUAD;	
+                if(sizeConn == 3)	eltype = bitpit::ElementType::TRIANGLE;
+                if(sizeConn == 4)	eltype = bitpit::ElementType::QUAD;	
                 break;
             case 2: 
                 if(dim == 3){
-                    if(sizeConn == 4)   eltype = bitpit::ElementInfo::TETRA;
-                    if(sizeConn == 5)   eltype = bitpit::ElementInfo::PYRAMID;
-                    if(sizeConn == 6)   eltype = bitpit::ElementInfo::WEDGE;
-                    if(sizeConn == 8)   eltype = bitpit::ElementInfo::HEXAHEDRON;
+                    if(sizeConn == 4)   eltype = bitpit::ElementType::TETRA;
+                    if(sizeConn == 5)   eltype = bitpit::ElementType::PYRAMID;
+                    if(sizeConn == 6)   eltype = bitpit::ElementType::WEDGE;
+                    if(sizeConn == 8)   eltype = bitpit::ElementType::HEXAHEDRON;
                 }   
                 if(dim == 2){
-                    if(sizeConn == 3)   eltype = bitpit::ElementInfo::TRIANGLE;
-                    if(sizeConn == 4)   eltype = bitpit::ElementInfo::QUAD; 
+                    if(sizeConn == 3)   eltype = bitpit::ElementType::TRIANGLE;
+                    if(sizeConn == 4)   eltype = bitpit::ElementType::QUAD; 
                 }
                 if(dim == 1){
-                    if(sizeConn == 2)   eltype = bitpit::ElementInfo::LINE; 
+                    if(sizeConn == 2)   eltype = bitpit::ElementType::LINE; 
                 }
                 break;
             case 4: 
-                if(sizeConn == 2)	eltype = bitpit::ElementInfo::LINE;	
+                if(sizeConn == 2)	eltype = bitpit::ElementType::LINE;	
                 break;
             default: 
                 // never been reached
                 break;
         }
         
-        if(eltype != bitpit::ElementInfo::UNDEFINED){
+        if(eltype != bitpit::ElementType::UNDEFINED){
             
             m_patch->reserveCells(sizeCell);
             
@@ -412,8 +412,9 @@ MimmoObject::getConnectivity(){
     for(auto & cell : getCells()){
         np = cell.getVertexCount();
         connecti[counter].resize(np);
+        auto locconn = cell.getConnect();
         for (int i=0; i<np; ++i){
-            connecti[counter][i] = cell.getVertex(i);
+            connecti[counter][i] = locconn[i];
         }
         ++counter;
     }
@@ -435,9 +436,9 @@ MimmoObject::getCellConnectivity(long i){
     bitpit::Cell & cell = m_patch->getCell(i); 
     int np = cell.getVertexCount();
     livector1D connecti(np);
-    
+    auto locconn = cell.getConnect();
     for (int j=0; j<np; j++){
-        connecti[j] = cell.getVertex(j);
+        connecti[j] = locconn[j];
     }
     return connecti;
 };
@@ -785,7 +786,7 @@ MimmoObject::setCells(const bitpit::PiercedVector<Cell> & cells){
     long idc;
     int nVert;
     short pid;
-    bitpit::ElementInfo::Type eltype;
+    bitpit::ElementType eltype;
     bool checkTot = true;
     livector1D connectivity;
     
@@ -824,7 +825,7 @@ MimmoObject::setCells(const bitpit::PiercedVector<Cell> & cells){
  * \return false if no geometry is linked, idtag already assigned or mismatched connectivity/element type 
  */
 bool
-MimmoObject::addConnectedCell(const livector1D & conn, bitpit::ElementInfo::Type type, long idtag){
+MimmoObject::addConnectedCell(const livector1D & conn, bitpit::ElementType type, long idtag){
 
     if (isEmpty() || conn.empty() || !m_bvTreeSupported) return false;
     if(idtag != bitpit::Cell::NULL_ID && m_patch->getCells().exists(idtag)) return false;
@@ -874,7 +875,7 @@ MimmoObject::addConnectedCell(const livector1D & conn, bitpit::ElementInfo::Type
  * \return false if no geometry is linked, idtag already assigned or mismatched connectivity/element type 
  */
 bool
-MimmoObject::addConnectedCell(const livector1D & conn, bitpit::ElementInfo::Type type, short PID, long idtag){
+MimmoObject::addConnectedCell(const livector1D & conn, bitpit::ElementType type, short PID, long idtag){
     
     if (isEmpty() || conn.empty() || !m_bvTreeSupported) return false;
     if(idtag != bitpit::Cell::NULL_ID && m_patch->getCells().exists(idtag)) return false;
@@ -1172,10 +1173,11 @@ livector1D MimmoObject::getCellFromVertexList(livector1D vertexList){
     //get conn from each cell of the list
     for(auto & cell : m_patch->getCells()){
         int nVloc = cell.getVertexCount();
+        auto locconn = cell.getConnect();
         int i=0;
         bool check = false;
         while(i< nVloc && !check){
-            check = ordV.count(cell.getVertex(i));
+            check = ordV.count(locconn[i]);
             ++i;
         }
         if(check) ordC.insert(cell.getId());
@@ -1284,7 +1286,7 @@ livector1D 	MimmoObject::extractBoundaryVertexID(){
         for(int face=0; face<size; ++face){
             
             if(cell.isFaceBorder(face)){
-                ivector1D list = cell.getFaceLocalConnect(face);
+                auto list = cell.getFaceLocalConnect(face);
                 for(auto && index : list ){
                     container.insert(conn[index]);
                 }
@@ -1345,35 +1347,35 @@ livector1D	MimmoObject::extractPIDCells(shivector1D flag){
  * \param[in] type  cell type to check, as bitpit::ElementInfo enum
  * \return integer with the dimension of the element supported. -1 flag the unsupported element;
  */
-int MimmoObject::checkCellType(bitpit::ElementInfo::Type type){
+int MimmoObject::checkCellType(bitpit::ElementType type){
     int check = -1;
     int patchType = getType();
     short int dim = getDimension();
     
     switch(patchType){
         case 1:
-            if  (type == bitpit::ElementInfo::TRIANGLE)     check = 3;
-            if  (type == bitpit::ElementInfo::QUAD)         check = 4;
+            if  (type == bitpit::ElementType::TRIANGLE)     check = 3;
+            if  (type == bitpit::ElementType::QUAD)         check = 4;
             break;
         case 2:
             if(dim == 3){
-                if  (type == bitpit::ElementInfo::TETRA)        check = 4;
-                if  (type == bitpit::ElementInfo::PYRAMID)      check = 5;
-                if  (type == bitpit::ElementInfo::WEDGE)        check = 6;
-                if  (type == bitpit::ElementInfo::HEXAHEDRON)   check = 8;
+                if  (type == bitpit::ElementType::TETRA)        check = 4;
+                if  (type == bitpit::ElementType::PYRAMID)      check = 5;
+                if  (type == bitpit::ElementType::WEDGE)        check = 6;
+                if  (type == bitpit::ElementType::HEXAHEDRON)   check = 8;
             }
             if(dim == 2){
-                if  (type == bitpit::ElementInfo::TRIANGLE)     check = 3;
-                if  (type == bitpit::ElementInfo::QUAD)         check = 4;
+                if  (type == bitpit::ElementType::TRIANGLE)     check = 3;
+                if  (type == bitpit::ElementType::QUAD)         check = 4;
             }
             if(dim == 1 ){
-                if  (type == bitpit::ElementInfo::LINE)         check = 2;
+                if  (type == bitpit::ElementType::LINE)         check = 2;
             }
             break;
         case 3:
-            if (type == bitpit::ElementInfo::VERTEX)        check = 1;
+            if (type == bitpit::ElementType::VERTEX)        check = 1;
         case 4:
-            if	(type == bitpit::ElementInfo::LINE)         check = 2;
+            if	(type == bitpit::ElementType::LINE)         check = 2;
             break;
         default:	//do nothing
             break;

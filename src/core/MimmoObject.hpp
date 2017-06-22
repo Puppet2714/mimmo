@@ -137,8 +137,8 @@ public:
     bool        addVertex(const darray3E & vertex, const long idtag = bitpit::Vertex::NULL_ID);
     bool        modifyVertex(const darray3E & vertex, long id);
     bool        setCells(const bitpit::PiercedVector<bitpit::Cell> & cells);
-    bool        addConnectedCell(const livector1D & locConn, bitpit::ElementInfo::Type type, long idtag = bitpit::Cell::NULL_ID);
-    bool        addConnectedCell(const livector1D & locConn, bitpit::ElementInfo::Type type, short PID, long idtag = bitpit::Cell::NULL_ID);
+    bool        addConnectedCell(const livector1D & locConn, bitpit::ElementType type, long idtag = bitpit::Cell::NULL_ID);
+    bool        addConnectedCell(const livector1D & locConn, bitpit::ElementType type, short PID, long idtag = bitpit::Cell::NULL_ID);
 
     bool        setPatch(int type, bitpit::PatchKernel* geometry);
     bool        setMapData();
@@ -183,7 +183,7 @@ public:
     bitpit::VTKElementType	desumeElement();
 
 private:
-    int     checkCellType(bitpit::ElementInfo::Type type);
+    int     checkCellType(bitpit::ElementType type);
     void    cleanKdTree();
 };
 

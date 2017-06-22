@@ -456,9 +456,10 @@ OBBox::evaluateCovarianceMatrix( dmatrix33E & covariance, darray3E & eta){
         long vCount;
         for(auto & cell: tri->getCells()){
             vCount = cell.getVertexCount();
+            auto con = cell.getConnect();
             pp.fill(0.0);
             for(int kk=0; kk<vCount; ++kk){
-                pp += tri->getVertexCoords(cell.getVertex(kk));
+                pp += tri->getVertexCoords(con[kk]);
             }
 
             eta += pp*area[counter];
@@ -472,9 +473,10 @@ OBBox::evaluateCovarianceMatrix( dmatrix33E & covariance, darray3E & eta){
         dvecarr3E p2;
         for(auto & cell: tri->getCells()){
             vCount = cell.getVertexCount();
+            auto con = cell.getConnect();
             p2.resize(vCount);
             for(int kk=0; kk<vCount; ++kk){
-                p2[kk] = tri->getVertexCoords(cell.getVertex(kk)) - eta;
+                p2[kk] = tri->getVertexCoords(con[kk]) - eta;
             }
 
             dmatrix33E tempM = evalCovTriangle(p2);

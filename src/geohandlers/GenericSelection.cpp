@@ -175,7 +175,7 @@ GenericSelection::constrainedBoundary(){
     long idV,idC;
     int sizeCC;
     int counter=0;
-    bitpit::ElementInfo::Type eltype;
+    bitpit::ElementType eltype;
 
     for(auto && cell : tri->getCells()){
 
@@ -183,10 +183,11 @@ GenericSelection::constrainedBoundary(){
         if (!(existentCells.exists(idC))){
             eltype = cell.getType();
             sizeCC = cell.getVertexCount();
+            auto connCC = cell.getConnect();
             TT.resize(sizeCC);
 
             for(int i=0; i<sizeCC; ++i){
-                idV = cell.getVertex(i);
+                idV = connCC[i];
                 TT[i] = idV;
                 if(!mapV.exists(idV))    temp->addVertex(tri->getVertexCoords(idV),idV);
             }
@@ -260,7 +261,7 @@ GenericSelection::execute(){
 
     long idV;
     int sizeCC;
-    bitpit::ElementInfo::Type eltype;
+    bitpit::ElementType eltype;
     short PID;
     if (m_topo != 3){
         for(auto && idCell : extracted){
@@ -268,11 +269,12 @@ GenericSelection::execute(){
             bitpit::Cell & cell = tri->getCell(idCell);
             eltype = cell.getType();
             sizeCC = cell.getVertexCount();
+            auto connCC = cell.getConnect();
             PID = (short)cell.getPID();
             TT.resize(sizeCC);
 
             for(int i=0; i<sizeCC; ++i){
-                idV = cell.getVertex(i);
+                idV = connCC[i];
                 TT[i] = idV;
 
                 if(!mapV.exists(idV))    temp->addVertex(tri->getVertexCoords(idV),idV);

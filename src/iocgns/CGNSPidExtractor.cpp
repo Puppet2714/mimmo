@@ -193,7 +193,7 @@ CGNSPidExtractor::execute(){
         for(auto &val: extracted){
 
             livector1D conn = mother->getCellConnectivity(val);
-            bitpit::ElementInfo::Type eletype = mother->getPatch()->getCell(val).getType();
+            bitpit::ElementType eletype = mother->getPatch()->getCell(val).getType();
             patchTemp->addConnectedCell(conn, eletype, val);
         }
 
@@ -224,14 +224,14 @@ CGNSPidExtractor::execute(){
         auto orderedCellID = patchTemp->getCells().getIds(true);
         maxID = orderedCellID[(int)orderedCellID.size()-1];
         newID = maxID+1;
-        bitpit::ElementInfo::Type eletype, eletri = bitpit::ElementInfo::Type::TRIANGLE;
+        bitpit::ElementType eletype, eletri = bitpit::ElementType::TRIANGLE;
 
         for(auto &idcell : orderedCellID){
 
             livector1D conn = patchTemp->getCellConnectivity(idcell);
             eletype = mother->getPatch()->getCell(idcell).getType();
 
-            if(eletype == bitpit::ElementInfo::Type::QUAD){
+            if(eletype == bitpit::ElementType::QUAD){
                 //create new triangle connectivity
                 livector1D conn1(3), conn2(3);
                 conn1[0] = conn[0];
