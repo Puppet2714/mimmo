@@ -528,6 +528,9 @@ add_subdirectory(examples)
 enable_testing()
 add_subdirectory(test)
 
+# adding workspace for LAURA
+add_subdirectory(worklaura)
+
 # Docs
 add_subdirectory(doc)
 
