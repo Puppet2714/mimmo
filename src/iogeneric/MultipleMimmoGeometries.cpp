@@ -31,12 +31,12 @@ namespace mimmo{
 /*!
  * Default constructor of MultipleMimmoGeometries.
  * Format admissible are linked to your choice of topology. See FileType enum
- * \param[in] topo    set topology of your geometries. 1-surface, 2-volume, 3-pointcloud
+ * \param[in] topo    set topology of your geometries. 1-surface, 2-volume, 3-pointcloud, 4-Curve3D
+ * \param[in] dim     dimensionality of the mesh 1,2,3. Meant for 2-volume type only
  */
-MultipleMimmoGeometries::MultipleMimmoGeometries(int topo){
-    initializeClass(topo, false);
+MultipleMimmoGeometries::MultipleMimmoGeometries(int topo, short int dim){
+    initializeClass(topo, false, dim);
 }
-
 
 /*!
  * Custom constructor reading xml data
@@ -46,17 +46,26 @@ MultipleMimmoGeometries::MultipleMimmoGeometries(const bitpit::Config::Section &
 
     std::string fallback_name = "ClassNONE";
     std::string fallback_topo = "-1";
-    std::string fallback_mode = "none";
+    std::string fallback_dim = "0";
 
     std::string input_name = rootXML.get("ClassName", fallback_name);
     std::string input_topo = rootXML.get("Topology", fallback_topo);
+    std::string input_dim  = rootXML.get("Dimension", fallback_dim);
 
+<<<<<<< HEAD
     input_name = bitpit::utils::string::trim(input_name);
     input_topo = bitpit::utils::string::trim(input_topo);
 
+=======
+    input_name = bitpit::utils::trim(input_name);
+    input_topo = bitpit::utils::trim(input_topo);
+    input_dim = bitpit::utils::trim(input_dim);
+    
+>>>>>>> core/iogeneric: added volume mesh degenerated cases
     int topo = std::stoi(input_topo);
-
-    initializeClass(topo, false);
+    int dim = std::stoi(input_dim);
+    
+    initializeClass(topo, false, dim);
 
     if(input_name == "mimmo.MultipleMimmoGeometries"){
         absorbSectionXML(rootXML);
@@ -69,9 +78,10 @@ MultipleMimmoGeometries::MultipleMimmoGeometries(const bitpit::Config::Section &
  * Format admissible are linked to your choice of topology. See FileType enum
  * \param[in] topo    set topology of your geometries. 1-surface, 2-volume, 3-pointcloud 4- 3D Curve
  * \param[in] IOMode set boolean to activate reading(false) and writing(true) mode of the class
+ * \param[in] dim     dimensionality of the mesh 1,2,3. Meant for 2-volume type only
  */
-MultipleMimmoGeometries::MultipleMimmoGeometries(int topo, bool IOMode){
-    initializeClass(topo, IOMode);
+MultipleMimmoGeometries::MultipleMimmoGeometries(int topo, bool IOMode, short int dim){
+    initializeClass(topo, IOMode, dim);
 }
 
 /*!Default destructor of MultipleMimmoGeometries.
@@ -101,6 +111,7 @@ MultipleMimmoGeometries & MultipleMimmoGeometries::operator=(const MultipleMimmo
     m_buildBvTree = other.m_buildBvTree;
     m_buildKdTree = other.m_buildKdTree;
     m_topo = other.m_topo;
+    m_dimension = other.m_dimension;
     m_ftype_allow = other.m_ftype_allow;
 
     m_isInternal = other.m_isInternal;
@@ -145,6 +156,21 @@ MultipleMimmoGeometries::getFileTypeAllowed(){
     }
 
     return results;
+}
+
+/*!
+ * \return current topology set for your class: 1-surface, 2-volume, 3-pointcloud 4- 3D Curve
+ */
+int MultipleMimmoGeometries::getTopology(){
+    return m_topo;
+}
+
+/*!
+ * \return dimensionality of the mesh 1,2,3. Meant for 2-volume topology mesh only.
+ * For all ohter topology return 0.
+ */
+short int MultipleMimmoGeometries::getDimension(){
+    return m_dimension;
 }
 
 /*!
@@ -445,6 +471,7 @@ MultipleMimmoGeometries::setHARDCopy(const MultipleMimmoGeometries * other){
     m_codex = other->m_codex;
 
     m_topo = other->m_topo;
+    m_dimension = other->m_dimension;
     m_ftype_allow = other->m_ftype_allow;
 
     m_buildBvTree = other->m_buildBvTree;
@@ -479,8 +506,11 @@ MultipleMimmoGeometries::setGeometry(std::vector<MimmoObject *> external){
     int counter = 0;
     for(auto & obj: external){
         if(!obj->isEmpty()){
-            m_extgeo[counter]= obj;
-            ++counter;
+            //check topology coherence.
+            if(obj->getType() == m_topo && obj->getDimension()== m_dimension){
+                m_extgeo[counter]= obj;
+                ++counter;
+            }    
         }
     }
     m_extgeo.resize(counter);
@@ -489,7 +519,7 @@ MultipleMimmoGeometries::setGeometry(std::vector<MimmoObject *> external){
 };
 
 /*!
- * Force your class to allocate a list of internal MimmoObject of m_topo type. 
+ * Force your class to allocate a list of internal MimmoObject of m_topo and m_dimension types. 
  * Other internal object allocated or externally linked geometries
  * will be destroyed/unlinked. This option is meant for reading mode of the class only
  */
@@ -503,7 +533,7 @@ MultipleMimmoGeometries::setGeometry(){
     m_intgeo.resize(size);
 
     for(int i=0; i<size; ++i){
-        std::unique_ptr<MimmoObject> dum(new MimmoObject(m_topo));
+        std::unique_ptr<MimmoObject> dum(new MimmoObject(m_topo, m_dimension));
         m_intgeo[i] = std::move(dum);
     }
     m_isInternal = true;
@@ -708,6 +738,19 @@ MultipleMimmoGeometries::absorbSectionXML(const bitpit::Config::Section & slotXM
         if(m_topo != temptop)    return;
     }
 
+    //checking topology
+    if(slotXML.hasOption("Dimension")){
+        std::string input = slotXML.get("Dimension");
+        input = bitpit::utils::trim(input);
+        short int dim = 0;
+        if(!input.empty()){
+            std::stringstream ss(input);
+            ss>>dim;
+        }
+        if(m_topo != 2 && m_dimension != dim)    return;
+    }
+    
+    
     BaseManipulation::absorbSectionXML(slotXML, name);
 
     if(slotXML.hasOption("ReadFlag")){
@@ -847,7 +890,7 @@ MultipleMimmoGeometries::flushSectionXML(bitpit::Config::Section & slotXML, std:
     BaseManipulation::flushSectionXML(slotXML, name);
     
     slotXML.set("Topology", m_topo);
-
+    slotXML.set("Dimension", m_dimension);
     std::string output;
 
     output = std::to_string(m_read);
@@ -924,11 +967,12 @@ MultipleMimmoGeometries::setDefaults(){
 
 /*!
  * Class initializer, meant to be used in construction.
- * \param[in] topo  set topology of your geometries. 1-surface, 2-volume, 3-pointcloud 4- 3D Curve
+ * \param[in] topo  set topology of your geometries. 1-surface, 2-volume, 3-pointcloud 4-3D Curve
  * \param[in] IOMode set boolean to activate reading(false) and writing(true) mode of the class
+ * \param[in] dim (optional) dimensionality fo the mesh 1,2,3. Meant for volume mesh only.
  */
 void
-MultipleMimmoGeometries::initializeClass(int topo, bool IOMode){
+MultipleMimmoGeometries::initializeClass(int topo, bool IOMode, short int dim){
 
     m_name         = "mimmo.MultipleGeometries";
     m_read = !IOMode; m_write = IOMode;
@@ -936,6 +980,9 @@ MultipleMimmoGeometries::initializeClass(int topo, bool IOMode){
     m_topo     = std::min(1, topo);
     if(m_topo > 4)    m_topo = 1;
 
+    m_dimension = (short)max((int)dim,3);
+    if(m_dimension < 1) m_dimension =3;
+    if(m_topo != 2) m_dimension = 0;
     //checking admissible format
     m_ftype_allow.clear();
     switch(m_topo){
@@ -944,17 +991,29 @@ MultipleMimmoGeometries::initializeClass(int topo, bool IOMode){
         m_ftype_allow.insert(1);
         m_ftype_allow.insert(2);
         m_ftype_allow.insert(5);
+        m_ftype_allow.insert(9);
+        m_ftype_allow.insert(10);
         break;
     case 2:
-        m_ftype_allow.insert(3);
-        m_ftype_allow.insert(4);
+        if(m_dimension == 3){
+            m_ftype_allow.insert(3);
+            m_ftype_allow.insert(4);
+        }
+        if(m_dimension == 2){
+            m_ftype_allow.insert(9);
+            m_ftype_allow.insert(10);
+        }
+        if(m_dimension == 1){
+            m_ftype_allow.insert(11);
+        }
         break;
     case 3:
-        m_ftype_allow.insert(8);
-        break;
-    default:
         m_ftype_allow.insert(6);
         m_ftype_allow.insert(7);
+    case 4:
+        m_ftype_allow.insert(8);
+        m_ftype_allow.insert(11);
+        break;
         break;
     }
 

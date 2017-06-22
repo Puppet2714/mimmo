@@ -42,21 +42,25 @@ namespace mimmo{
  * The valid format are: binary .stl, ascii .vtu (triangle/quadrilateral elements) and
  * ascii .nas (triangle elements) for surface mesh; ascii .vtu (tetra/hexa elements)
  * for volume mesh. ofp or pcvtu point cloud formats for generic point cloud structures.
+ * Degenerate volume mesh (2D planar surface or 1D linear mesh) are readable/writable in vtu format. 
  * The current class can be used in Reading or Writing modes once,
  * not both at the same time.
  * 
  * \n
  * It uses smart enums FileType list of available geometry formats, which are:
  * 
- * - <B>STL     = 0</B>    Ascii/Binary triangulation stl.
- * - <B>STVTU     = 1</B> Surface triangulation vtu.
- * - <B>SQVTU     = 2</B> Surface quadrilateral vtu.
- * - <B>VTVTU     = 3</B> Volume tetrahedral VTU.
- * - <B>VHVTU     = 4</B> Volume hexahedral VTU.
- * - <B>NAS     = 5</B> Nastran triangulation nas.
- * - <B>OFP     = 6</B> Ascii OpenFoam point cloud.
- * - <B>PCVTU   = 7</B> Point Cloud VTU
- * - <B>CURVEVTU= 8</B> 3D Curve in VTU
+ * - <B>STL         = 0</B>  Ascii/Binary triangulation stl.
+ * - <B>STVTU       = 1</B>  Surface triangulation vtu.
+ * - <B>SQVTU       = 2</B>  Surface quadrilateral vtu.
+ * - <B>VTVTU       = 3</B>  Volume tetrahedral VTU.
+ * - <B>VHVTU       = 4</B>  Volume hexahedral VTU.
+ * - <B>NAS         = 5</B>  Nastran triangulation nas.
+ * - <B>OFP         = 6</B>  Ascii OpenFoam point cloud.
+ * - <B>PCVTU       = 7</B>  Point Cloud VTU
+ * - <B>CURVEVTU    = 8</B>  3D Curve in VTU
+ * - <B>STVTUPLANAR = 9</B>  Planar surface triangulation vtu -> degenerate 2D volume mesh.
+ * - <B>SQVTUPLANAR = 10</B> Planar surface quadrilateral vtu -> degenerate 2D volume mesh.
+ * - <B>LVTUPLANAR  = 11</B> Linear 1D vtu -> degenerate 1D volume mesh.
  *
  * Outside this list of options, the class cannot hold any other type of formats for now.
  * The smart enum can be recalled in every moment in your code, just using <tt>mimmo::FileType</tt>
@@ -96,6 +100,7 @@ namespace mimmo{
  *
  * Proper of the class:
  * - <B>Topology</B> unique type of multiple geometries read/written: 1-surface mesh 2-volume mesh 3-point cloud 4-3D curve
+ * - <B>Dimension</B> dimensionality of the mesh: 1-1D, 2-2D, 3-3D. This option is active only for 2-volume mesh type.
  * - <B>ReadFlag</B>: activate reading mode boolean;
  * - <B>ReadInfoData</B>: reading files data: \n
  *     <tt> \<ReadInfoData\> \n
@@ -139,6 +144,7 @@ class MultipleMimmoGeometries: public BaseManipulation{
 
 private:
     int                         m_topo;            /**<Mark topology of your multi-file I/O geometry 1-surface, 2-volume, 3-pointcloud*/
+    short int                   m_dimension;      /**< Dimensionality of the mesh 1D, 2D, 3D. Meant for volume mesh only for now */
     std::set<int>                m_ftype_allow;  /**< list of file type currnetly allowed for the class, according to its topology */
     bool                        m_read;            /**<If true it reads the geometry from file during the execution.*/
     std::vector<FileDataInfo>    m_rinfo;        /**<List of filenames data given to the reader */
@@ -158,8 +164,8 @@ private:
 
 
 public:
-    MultipleMimmoGeometries(int topo);
-    MultipleMimmoGeometries(int topo, bool IOMode);
+    MultipleMimmoGeometries(int topo, short int dim=3);
+    MultipleMimmoGeometries(int topo, bool IOMode, short int dim=3);
     MultipleMimmoGeometries(const bitpit::Config::Section & rootXML);
 
     virtual ~MultipleMimmoGeometries();
@@ -169,11 +175,12 @@ public:
 
     void buildPorts();
 
-    std::vector<int>        getFileTypeAllowed();
-
-    const MultipleMimmoGeometries *                getCopy();
-    std::vector< MimmoObject *>                 getGeometry();
-    const std::vector< MimmoObject *>             getGeometry()const ;
+    std::vector<int>                   getFileTypeAllowed();
+    int                                getTopology();
+    short int                          getDimension();
+    const MultipleMimmoGeometries *    getCopy();
+    std::vector< MimmoObject *>        getGeometry();
+    const std::vector< MimmoObject *>  getGeometry()const ;
 
     std::vector<FileDataInfo>         getReadListFDI();
     std::vector<FileDataInfo>         getWriteListFDI();
@@ -221,7 +228,7 @@ public:
 
 private:
     void     setDefaults();
-    void     initializeClass(int topo, bool IOMode);
+    void     initializeClass(int topo, bool IOMode, short int dim=3);
     void    setGeometry();
 };
 

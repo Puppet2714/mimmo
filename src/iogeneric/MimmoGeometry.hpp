@@ -27,7 +27,7 @@
 #include "BaseManipulation.hpp"
 #include "MimmoNamespace.hpp"
 
-BETTER_ENUM(FileType, int, STL = 0, STVTU = 1, SQVTU = 2, VTVTU = 3, VHVTU = 4, NAS = 5, OFP = 6, PCVTU = 7, CURVEVTU = 8, MIMMO = 99);
+BETTER_ENUM(FileType, int, STL = 0, STVTU = 1, SQVTU = 2, VTVTU = 3, VHVTU = 4, NAS = 5, OFP = 6, PCVTU = 7, CURVEVTU = 8, STVTUPLANAR=9, SQVTUPLANAR = 10, LVTUPLANAR=11, MIMMO = 99));
 BETTER_ENUM(IOMode, int, READ = 0, WRITE = 1, CONVERT = 2);
 
 namespace mimmo{
@@ -66,17 +66,20 @@ enum WFORMAT{    /*!Single precision data.*/        Short,
  * \n
  * It uses smart enums FileType list of available geometry formats, which are:
  * 
- * - <B>STL     = 0</B>    Ascii/Binary triangulation stl.
- * - <B>STVTU     = 1</B> Surface triangulation vtu.
- * - <B>SQVTU     = 2</B> Surface quadrilateral vtu.
- * - <B>VTVTU     = 3</B> Volume tetrahedral VTU.
- * - <B>VHVTU     = 4</B> Volume hexahedral VTU.
- * - <B>NAS     = 5</B> Nastran triangulation nas.
- * - <B>OFP     = 6</B> Ascii OpenFoam point cloud.
- * - <B>PCVTU   = 7</B> Point Cloud VTU
- * - <B>CURVEVTU= 8</B> 3D Curve in VTU
+ * - <B>STL         = 0</B>  Ascii/Binary triangulation stl.
+ * - <B>STVTU       = 1</B>  Surface triangulation vtu.
+ * - <B>SQVTU       = 2</B>  Surface quadrilateral vtu.
+ * - <B>VTVTU       = 3</B>  Volume tetrahedral VTU.
+ * - <B>VHVTU       = 4</B>  Volume hexahedral VTU.
+ * - <B>NAS         = 5</B>  Nastran triangulation nas.
+ * - <B>OFP         = 6</B>  Ascii OpenFoam point cloud.
+ * - <B>PCVTU       = 7</B>  Point Cloud VTU
+ * - <B>CURVEVTU    = 8</B>  3D Curve in VTU
+ * - <B>STVTUPLANAR = 9</B>  Planar surface triangulation vtu -> degenerate 2D volume mesh.
+ * - <B>SQVTUPLANAR = 10</B> Planar surface quadrilateral vtu -> degenerate 2D volume mesh.
+ * - <B>LVTUPLANAR  = 11</B> Linear 1D vtu -> degenerate 1D volume mesh.
  * - <B>MIMMO   = 99</B> mimmo dump/restore format *.geomimmo
- *
+ * 
  * Outside this list of options, the class cannot hold any other type of formats for now.
  * The smart enum can be recalled in every moment in your code, just using <tt>mimmo::FileType</tt>
  * and including MimmoGeometry header.
@@ -105,6 +108,8 @@ enum WFORMAT{    /*!Single precision data.*/        Short,
  * Inherited from BaseManipulation:
  * - <B>ClassName</B>: name of the class as <tt>mimmo.Geometry</tt>;
  * - <B>Priority</B>: uint marking priority in multi-chain execution;
+ *
+ * Proper of the class:
  * - <B>IOMode</B>: activate READ, WRITE or CONVERT mode;
  * - <B>Dir</B>: directory path;
  * - <B>Filename</B>: name of file for reading/writing;
@@ -183,7 +188,7 @@ public:
     void        setSOFTCopy( const MimmoGeometry * other);
 
     void        setGeometry( MimmoObject * external);
-    void        setGeometry(int type=1);
+    void        setGeometry(int type=1, short int dimension=3);
 
     bitpit::PiercedVector<bitpit::Vertex> *     getVertices();
     bitpit::PiercedVector<bitpit::Cell> *         getCells();
