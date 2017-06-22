@@ -47,8 +47,8 @@ namespace mimmo{
 * MimmoObject can handle unustructured surface meshes, unustructured volume meshes, 3D point clouds and 3D tessellated curves.
 * In the case only on unstructured volume meshes, the User can work with meshes with different dimensionality:
 * - Volume mesh with pure 3D elements (dimension 3). 
-* - Degenerate Surface mesh (purely planar, not defined in 3D) with pure 2D elements (dimension 2). 
-* - Degenerate Linear mesh (one dimensional, not defined in 3D) with pure 1D elements-line (dimension 1).
+* - Surface mesh (purely planar, not defined in 3D) with pure 2D elements (dimension 2). 
+* - Linear mesh (one dimensional, not defined in 3D) with pure 1D elements-line (dimension 1).
 * It supports interface methods to explore and handle the geometrical structure. It supports PID convention to mark subparts 
 * of geometry as well as building the search-trees KdTree and BvTree to quickly retrieve vertices and cells in the data structure.
 */
@@ -57,7 +57,7 @@ class MimmoObject{
 protected:
 //members
     int                                     m_type;            /**<Type of geometry (0 = undefined, 1 = surface mesh, 2 = volume mesh, 3-point cloud mesh, 4-3DCurve). */
-    short int                               m_dimension;       /**<Dimensionality parameter 1-1D,2-2D and 3-3D. This parameter is only meant for volume mesh of type 2 to control its degenrate state*/
+    short int                               m_dimension;       /**<Dimensionality parameter 1-1D,2-2D and 3-3D. This parameter is only meant for volume mesh of type 2 to control its dimensionality */
     bitpit::PatchKernel*                    m_patch;           /**<Reference to bitpit patch handling geometry. */
     bool                                    m_internalPatch;   /**<True if the geometry is internally created. */
     livector1D                              m_mapData;         /**<Map of vertex ids actually set, for aligning external vertex data to bitpit::PatchKernel ordering */

@@ -183,9 +183,13 @@ MimmoGeometry::setReadFileType(FileType type){
  */
 void
 MimmoGeometry::setReadFileType(int type){
-    type = std::max(0, type);
-    if(type > 8)    type = 0;
-    m_rinfo.ftype = type;
+    
+    auto maybe_type = FileType::_from_integral(type);
+    if(!maybe_type) {
+        m_rinfo.ftype = 0;
+    }else{
+        m_rinfo.ftype = type; 
+    }
 }
 
 /*!It sets the name of directory to read the geometry.
@@ -221,9 +225,13 @@ MimmoGeometry::setWriteFileType(FileType type){
  */
 void
 MimmoGeometry::setWriteFileType(int type){
-    type = std::max(0, type);
-    if(type > 8)    type = 0;
-    m_winfo.ftype = type;
+    auto maybe_type = FileType::_from_integral(type);
+    if(!maybe_type) {
+        m_winfo.ftype = 0;
+    }else{
+        m_winfo.ftype = type; 
+    }
+    
 }
 
 /*!It sets the condition to write the geometry on file during the execution.
@@ -349,10 +357,15 @@ MimmoGeometry::setFileType(FileType type){
  */
 void
 MimmoGeometry::setFileType(int type){
-    type = std::max(0, type);
-    if(type > 8)    type = 0;
-    m_winfo.ftype = type;
-    m_rinfo.ftype = type;
+    auto maybe_type = FileType::_from_integral(type);
+    if(!maybe_type) {
+        m_rinfo.ftype = 0;
+        m_winfo.ftype = 0;
+    }else{
+        m_rinfo.ftype = type;
+        m_winfo.ftype = type;
+    }
+    
 }
 
 /*!
@@ -439,13 +452,13 @@ MimmoGeometry::setGeometry(MimmoObject * external){
  * 2-Volume Mesh,3-Point Cloud, 4-3DCurve. Other internal object allocated or externally linked geometries
  * will be destroyed/unlinked.
  * \param[in] type 1-Surface MimmoObject, 2-Volume MimmoObject, 3-Point Cloud, 4-3DCurve. Default is 1, no other type are supported
- * \param[in] dimension 1,2,3, meant to get degenerate case of Volume Mesh in 2D and 1D. 
+ * \param[in] dimension 1,2,3, meant to get sub-cases of a Volume Mesh in 1D, 2D or 3D 
  */
 void
 MimmoGeometry::setGeometry(int type, short int dimension){
     if(type > 4)    type = 1;
     int type_ = std::max(type,1);
-    short int dim_ = (short)max(3, (int)dimension);
+    short int dim_ = (short)min(3, (int)dimension);
     if(dim_ <1) dim_=3;
     m_geometry = NULL;
     m_intgeo.reset(nullptr);
@@ -751,7 +764,7 @@ MimmoGeometry::write(){
     break;
 
     case FileType::STVTUPLANAR :
-        //Export planar triangulation Surface VTU - 2D degenerate volume mesh 
+        //Export planar triangulation Surface VTU - 2D subcase of a volume mesh 
     {
         dvecarr3E    points = getGeometry()->getVertexCoords();
         ivector2D    connectivity = getGeometry()->getCompactConnectivity();
@@ -769,7 +782,7 @@ MimmoGeometry::write(){
     break;
     
     case FileType::SQVTUPLANAR :
-        //Export planar quadrilateral Surface VTU - 2D degenerate volume mesh 
+        //Export planar quadrilateral Surface VTU - D subcase of a volume mesh 
     {
         dvecarr3E    points = getGeometry()->getVertexCoords();
         ivector2D    connectivity = getGeometry()->getCompactConnectivity();
@@ -787,7 +800,7 @@ MimmoGeometry::write(){
     break;
 
     case FileType::LVTUPLANAR :
-        //Export linear mesh in VTU - 1D degenerate volume mesh 
+        //Export linear mesh in VTU - 1D D subcase of a volume mesh 
     {
         dvecarr3E    points = getGeometry()->getVertexCoords();
         ivector2D    connectivity = getGeometry()->getCompactConnectivity();
@@ -1264,7 +1277,7 @@ MimmoGeometry::read(){
     break;
     
     case FileType::SQVTUPLANAR :
-        //Import Planar quadrilateral surface VTU - 2D degenerated volume mesh
+        //Import Planar quadrilateral surface VTU - 2D D subcase of a volume mesh
     {
         
         std::ifstream infile(m_rinfo.fdir+"/"+m_rinfo.fname+".vtu");
@@ -1314,7 +1327,7 @@ MimmoGeometry::read(){
     break;
     
     case FileType::LVTUPLANAR :
-        //Import linear mesh VTU - 1D degenerated volume mesh
+        //Import linear mesh VTU - 1D D subcase of a volume mesh
     {
         std::ifstream infile(m_rinfo.fdir+"/"+m_rinfo.fname+".vtu");
         bool check = infile.good();

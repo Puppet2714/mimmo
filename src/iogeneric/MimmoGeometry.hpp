@@ -75,9 +75,9 @@ enum WFORMAT{    /*!Single precision data.*/        Short,
  * - <B>OFP         = 6</B>  Ascii OpenFoam point cloud.
  * - <B>PCVTU       = 7</B>  Point Cloud VTU
  * - <B>CURVEVTU    = 8</B>  3D Curve in VTU
- * - <B>STVTUPLANAR = 9</B>  Planar surface triangulation vtu -> degenerate 2D volume mesh.
- * - <B>SQVTUPLANAR = 10</B> Planar surface quadrilateral vtu -> degenerate 2D volume mesh.
- * - <B>LVTUPLANAR  = 11</B> Linear 1D vtu -> degenerate 1D volume mesh.
+ * - <B>STVTUPLANAR = 9</B>  Planar surface triangulation vtu -> 2D subcase of a volume mesh.
+ * - <B>SQVTUPLANAR = 10</B> Planar surface quadrilateral vtu -> 2D subcase of a volume mesh.
+ * - <B>LVTUPLANAR  = 11</B> Linear 1D vtu -> 1D subcase of a volume mesh.
  * - <B>MIMMO   = 99</B> mimmo dump/restore format *.geomimmo
  * 
  * Outside this list of options, the class cannot hold any other type of formats for now.

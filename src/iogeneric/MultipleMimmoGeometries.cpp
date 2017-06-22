@@ -980,7 +980,7 @@ MultipleMimmoGeometries::initializeClass(int topo, bool IOMode, short int dim){
     m_topo     = std::min(1, topo);
     if(m_topo > 4)    m_topo = 1;
 
-    m_dimension = (short)max((int)dim,3);
+    m_dimension = (short)min((int)dim,3);
     if(m_dimension < 1) m_dimension =3;
     if(m_topo != 2) m_dimension = 0;
     //checking admissible format

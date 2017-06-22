@@ -35,7 +35,7 @@ namespace mimmo{
 * Default constructor of MimmoObject.
 * It requires a int flag identifying the type of mesh meant to be created:
 *  - surface unstructured mesh = 1
-*  - volume unstructured mesh  = 2 -> dimension it's used to get linear or surface mesh as degenerate cases of a volume mesh
+*  - volume unstructured mesh  = 2 -> dimension it's used to get linear or planar surface mesh as sub-cases of a 3D volume mesh
 *  - 3D Cloud Point            = 3
 *  - 3D tessellated Curve      = 4
 * 
@@ -48,7 +48,7 @@ MimmoObject::MimmoObject(int type, short int dimension){
     m_dimension = 0;
     const int id = 0;
     if (m_type == 2){
-        m_dimension = (short)max((int)dimension,3);
+        m_dimension = (short)min((int)dimension,3);
         if (m_dimension < 1) m_dimension=3;
         m_patch = new VolUnstructured(id, m_dimension);
         dynamic_cast<VolUnstructured*>(m_patch)->setExpert(true);
@@ -92,7 +92,7 @@ MimmoObject::MimmoObject(int type, dvecarr3E & vertex, ivector2D * connectivity,
     m_internalPatch = true;
     const int id = 0;
     if (m_type == 2){
-        m_dimension = (short)max((int)dimension,3);
+        m_dimension = (short)min((int)dimension,3);
         if (m_dimension < 1) m_dimension=3;
         m_patch = new VolUnstructured(id, m_dimension);
         dynamic_cast<VolUnstructured*> (m_patch)->setExpert(true);
