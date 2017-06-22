@@ -51,17 +51,10 @@ MultipleMimmoGeometries::MultipleMimmoGeometries(const bitpit::Config::Section &
     std::string input_name = rootXML.get("ClassName", fallback_name);
     std::string input_topo = rootXML.get("Topology", fallback_topo);
     std::string input_dim  = rootXML.get("Dimension", fallback_dim);
-
-<<<<<<< HEAD
-    input_name = bitpit::utils::string::trim(input_name);
-    input_topo = bitpit::utils::string::trim(input_topo);
-
-=======
     input_name = bitpit::utils::trim(input_name);
     input_topo = bitpit::utils::trim(input_topo);
     input_dim = bitpit::utils::trim(input_dim);
     
->>>>>>> core/iogeneric: added volume mesh degenerated cases
     int topo = std::stoi(input_topo);
     int dim = std::stoi(input_dim);
     
