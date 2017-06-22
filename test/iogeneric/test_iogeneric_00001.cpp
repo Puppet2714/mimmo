@@ -36,10 +36,14 @@ using namespace mimmo;
 int test1() {
 	
     MimmoGeometry * reader = new MimmoGeometry();
-    reader->setIOMode(IOMode::READ);
+    reader->setIOMode(IOMode::CONVERT);
     reader->setReadDir("geodata");
     reader->setReadFilename("prism");
     reader->setReadFileType(FileType::STL);
+    reader->setWriteDir(".");
+    reader->setWriteFilename("prism");
+    reader->setWriteFileType(FileType::STVTU);
+    reader->setCodex(false);
     reader->exec();
     
     bool check = reader->getGeometry()->getNCells() == 12288;

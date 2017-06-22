@@ -42,7 +42,7 @@ namespace mimmo{
  * The valid format are: binary .stl, ascii .vtu (triangle/quadrilateral elements) and
  * ascii .nas (triangle elements) for surface mesh; ascii .vtu (tetra/hexa elements)
  * for volume mesh. ofp or pcvtu point cloud formats for generic point cloud structures.
- * Degenerate volume mesh (2D planar surface or 1D linear mesh) are readable/writable in vtu format. 
+ * Subcases of a volume mesh (2D planar surface or 1D linear mesh) are readable/writable in vtu format. 
  * The current class can be used in Reading or Writing modes once,
  * not both at the same time.
  * 
@@ -58,9 +58,9 @@ namespace mimmo{
  * - <B>OFP         = 6</B>  Ascii OpenFoam point cloud.
  * - <B>PCVTU       = 7</B>  Point Cloud VTU
  * - <B>CURVEVTU    = 8</B>  3D Curve in VTU
- * - <B>STVTUPLANAR = 9</B>  Planar surface triangulation vtu -> degenerate 2D volume mesh.
- * - <B>SQVTUPLANAR = 10</B> Planar surface quadrilateral vtu -> degenerate 2D volume mesh.
- * - <B>LVTUPLANAR  = 11</B> Linear 1D vtu -> degenerate 1D volume mesh.
+ * - <B>STVTUPLANAR = 9</B>  Planar surface triangulation vtu -> 2D subcase of a volume mesh.
+ * - <B>SQVTUPLANAR = 10</B> Planar surface quadrilateral vtu -> 2D subcase of a volume mesh.
+ * - <B>LVTUPLANAR  = 11</B> Linear 1D vtu -> 1D subcase of a volume mesh.
  *
  * Outside this list of options, the class cannot hold any other type of formats for now.
  * The smart enum can be recalled in every moment in your code, just using <tt>mimmo::FileType</tt>
