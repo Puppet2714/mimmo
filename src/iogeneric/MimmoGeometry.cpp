@@ -422,14 +422,17 @@ MimmoGeometry::setGeometry(MimmoObject * external){
  * 2-Volume Mesh,3-Point Cloud, 4-3DCurve. Other internal object allocated or externally linked geometries
  * will be destroyed/unlinked.
  * \param[in] type 1-Surface MimmoObject, 2-Volume MimmoObject, 3-Point Cloud, 4-3DCurve. Default is 1, no other type are supported
+ * \param[in] dimension 1,2,3, meant to get degenerate case of Volume Mesh in 2D and 1D. 
  */
 void
-MimmoGeometry::setGeometry(int type){
+MimmoGeometry::setGeometry(int type, short int dimension){
     if(type > 4)    type = 1;
     int type_ = std::max(type,1);
+    short int dim_ = (short)max(3, (int)dimension);
+    if(dim_ <1) dim_=3;
     m_geometry = NULL;
     m_intgeo.reset(nullptr);
-    std::unique_ptr<MimmoObject> dum(new MimmoObject(type_));
+    std::unique_ptr<MimmoObject> dum(new MimmoObject(type_, dim_));
     m_intgeo = std::move(dum);
     m_isInternal = true;
 };
@@ -710,7 +713,59 @@ MimmoGeometry::write(){
     }
     break;
 
+    case FileType::STVTUPLANAR :
+        //Export planar triangulation Surface VTU - 2D degenerate volume mesh 
+    {
+        dvecarr3E    points = getGeometry()->getVertexCoords();
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        shivector1D pids = getGeometry()->getCompactPID();
+        bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::TRIANGLE);
+        vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
+        vtk.setGeomData( bitpit::VTKUnstructuredField::CONNECTIVITY, connectivity) ;
+        vtk.setDimensions(connectivity.size(), points.size());
+        if(pids.size() > 0)    vtk.addData("PID", bitpit::VTKFieldType::SCALAR, bitpit::VTKLocation::CELL, pids);
+        if(!m_codex)    vtk.setCodex(bitpit::VTKFormat::ASCII);
+        else            vtk.setCodex(bitpit::VTKFormat::APPENDED);
+        vtk.write() ;
+        return true;
+    }
+    break;
+    
+    case FileType::SQVTUPLANAR :
+        //Export planar quadrilateral Surface VTU - 2D degenerate volume mesh 
+    {
+        dvecarr3E    points = getGeometry()->getVertexCoords();
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        shivector1D pids = getGeometry()->getCompactPID();
+        bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::QUAD);
+        vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
+        vtk.setGeomData( bitpit::VTKUnstructuredField::CONNECTIVITY, connectivity) ;
+        vtk.setDimensions(connectivity.size(), points.size());
+        if(pids.size() > 0)        vtk.addData("PID", bitpit::VTKFieldType::SCALAR, bitpit::VTKLocation::CELL, pids);
+        if(!m_codex)    vtk.setCodex(bitpit::VTKFormat::ASCII);
+        else            vtk.setCodex(bitpit::VTKFormat::APPENDED);
+        vtk.write() ;
+        return true;
+    }
+    break;
 
+    case FileType::LVTUPLANAR :
+        //Export linear mesh in VTU - 1D degenerate volume mesh 
+    {
+        dvecarr3E    points = getGeometry()->getVertexCoords();
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        shivector1D pids = getGeometry()->getCompactPID();
+        bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::LINE);
+        vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
+        vtk.setGeomData( bitpit::VTKUnstructuredField::CONNECTIVITY, connectivity) ;
+        vtk.setDimensions(connectivity.size(), points.size());
+        if(pids.size() > 0)        vtk.addData("PID", bitpit::VTKFieldType::SCALAR, bitpit::VTKLocation::CELL, pids);
+        if(!m_codex)    vtk.setCodex(bitpit::VTKFormat::ASCII);
+        else            vtk.setCodex(bitpit::VTKFormat::APPENDED);
+        vtk.write() ;
+        return true;
+    }
+    break;
     default: //never been reached
         break;
     }
@@ -889,7 +944,7 @@ MimmoGeometry::read(){
 
         bitpit::ElementInfo::Type eltype = bitpit::ElementInfo::TETRA;
 
-        setGeometry(2);
+        setGeometry(2,3);
 
         int sizeV, sizeC, sizeP;
         sizeV = Ipoints.size();
@@ -940,7 +995,7 @@ MimmoGeometry::read(){
 
         bitpit::ElementInfo::Type eltype = bitpit::ElementInfo::HEXAHEDRON;
 
-        setGeometry(2);
+        setGeometry(2,3);
 
         int sizeV, sizeC, sizeP;
         sizeV = Ipoints.size();
@@ -1106,6 +1161,150 @@ MimmoGeometry::read(){
     }
     break;
 
+    
+    case FileType::STVTUPLANAR :
+        //Import planar triangulation surface VTU
+    {
+        std::ifstream infile(m_rinfo.fdir+"/"+m_rinfo.fname+".vtu");
+        bool check = infile.good();
+        if (!check) return false;
+        
+        dvecarr3E    Ipoints ;
+        ivector2D    Iconnectivity ;
+        shivector1D pids;
+        
+        bitpit::VTKUnstructuredGrid  vtk(m_rinfo.fdir, m_rinfo.fname, bitpit::VTKElementType::TRIANGLE);
+        vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, Ipoints) ;
+        vtk.setGeomData( bitpit::VTKUnstructuredField::CONNECTIVITY, Iconnectivity) ;
+        vtk.addData("PID", pids);
+        
+        vtk.read() ;
+        
+        bitpit::ElementInfo::Type eltype = bitpit::ElementInfo::TRIANGLE;
+        
+        setGeometry(2,2);
+        
+        int sizeV, sizeC, sizeP;
+        sizeV = Ipoints.size();
+        sizeC = Iconnectivity.size();
+        sizeP = pids.size();
+        m_intgeo->getPatch()->reserveVertices(sizeV);
+        m_intgeo->getPatch()->reserveCells(sizeC);
+        
+        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        
+        int ccell = 0;
+        for(auto & cc : Iconnectivity)    {
+            livector1D temp(cc.size());
+            int counter = 0;
+            for(auto && val : cc){
+                temp[counter] = val;
+                ++counter;
+            }
+            if(sizeP == 0){
+                m_intgeo->addConnectedCell(temp, eltype);
+            }else{
+                m_intgeo->addConnectedCell(temp, eltype, pids[ccell]);
+            }
+            ccell++;
+        }
+        
+        m_intgeo->cleanGeometry();
+    }
+    break;
+    
+    case FileType::SQVTUPLANAR :
+        //Import Planar quadrilateral surface VTU - 2D degenerated volume mesh
+    {
+        
+        std::ifstream infile(m_rinfo.fdir+"/"+m_rinfo.fname+".vtu");
+        bool check = infile.good();
+        if (!check) return false;
+        
+        dvecarr3E    Ipoints ;
+        ivector2D    Iconnectivity ;
+        shivector1D pids;
+        
+        bitpit::VTKUnstructuredGrid  vtk(m_rinfo.fdir, m_rinfo.fname, bitpit::VTKElementType::QUAD);
+        vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, Ipoints) ;
+        vtk.setGeomData( bitpit::VTKUnstructuredField::CONNECTIVITY, Iconnectivity) ;
+        vtk.addData("PID", pids);
+        vtk.read() ;
+        
+        bitpit::ElementInfo::Type eltype = bitpit::ElementInfo::QUAD;
+        
+        setGeometry(2,2);
+        
+        int sizeV, sizeC, sizeP;
+        sizeV = Ipoints.size();
+        sizeC = Iconnectivity.size();
+        sizeP = pids.size();
+        m_intgeo->getPatch()->reserveVertices(sizeV);
+        m_intgeo->getPatch()->reserveCells(sizeC);
+        
+        int ccell = 0;
+        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(auto & cc : Iconnectivity)    {
+            livector1D temp(cc.size());
+            int counter = 0;
+            for(auto && val : cc){
+                temp[counter] = val;
+                ++counter;
+            }
+            if(sizeP == 0){
+                m_intgeo->addConnectedCell(temp, eltype);
+            }else{
+                m_intgeo->addConnectedCell(temp, eltype, pids[ccell]);
+            }
+            ccell++;
+        }
+        
+        m_intgeo->cleanGeometry();
+    }
+    break;
+    
+    case FileType::LVTUPLANAR :
+        //Import linear mesh VTU - 1D degenerated volume mesh
+    {
+        std::ifstream infile(m_rinfo.fdir+"/"+m_rinfo.fname+".vtu");
+        bool check = infile.good();
+        if (!check) return false;
+        
+        dvecarr3E    Ipoints ;
+        ivector2D    Iconnectivity ;
+        shivector1D pids;
+        bitpit::VTKUnstructuredGrid  vtk(m_rinfo.fdir, m_rinfo.fname, bitpit::VTKElementType::LINE);
+        vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, Ipoints) ;
+        vtk.setGeomData( bitpit::VTKUnstructuredField::CONNECTIVITY, Iconnectivity) ;
+        vtk.addData("PID", pids);
+        vtk.read() ;
+        
+        bitpit::ElementInfo::Type eltype = bitpit::ElementInfo::LINE;
+        
+        setGeometry(2,1);
+        
+        int sizeV, sizeC;
+        sizeV = Ipoints.size();
+        sizeC = Iconnectivity.size();
+        m_intgeo->getPatch()->reserveVertices(sizeV);
+        m_intgeo->getPatch()->reserveCells(sizeC);
+        
+        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(auto & cc : Iconnectivity)    {
+            livector1D temp(cc.size());
+            int counter = 0;
+            for(auto && val : cc){
+                temp[counter] = val;
+                ++counter;
+            }
+            m_intgeo->addConnectedCell(temp, eltype);
+            
+        }
+        m_intgeo->setPID(pids);
+        m_intgeo->cleanGeometry();
+    }
+    break;
+    
 
     default: //never been reached
         break;

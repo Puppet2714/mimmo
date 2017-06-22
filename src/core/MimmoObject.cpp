@@ -35,18 +35,22 @@ namespace mimmo{
 * Default constructor of MimmoObject.
 * It requires a int flag identifying the type of mesh meant to be created:
 *  - surface unstructured mesh = 1
-*  - volume unstructured mesh  = 2
+*  - volume unstructured mesh  = 2 -> dimension it's used to get linear or surface mesh as degenerate cases of a volume mesh
 *  - 3D Cloud Point            = 3
 *  - 3D tessellated Curve      = 4
 * 
 * \param[in] type type of mesh
+* \param[in] dimension dimensionality of the mesh
 */
-MimmoObject::MimmoObject(int type){
+MimmoObject::MimmoObject(int type, short int dimension){
     
     m_type = max(type,1);
+    m_dimension = 0;
     const int id = 0;
     if (m_type == 2){
-        m_patch = new VolUnstructured(id, 3);
+        m_dimension = (short)max((int)dimension,3);
+        if (m_dimension < 1) m_dimension=3;
+        m_patch = new VolUnstructured(id, m_dimension);
         dynamic_cast<VolUnstructured*>(m_patch)->setExpert(true);
     }else{
         m_patch = new SurfUnstructured(id);
@@ -79,13 +83,17 @@ MimmoObject::MimmoObject(int type){
 * \param[in] type type of meshes.
 * \param[in] vertex Coordinates of geometry vertices.
 * \param[in] connectivity pointer to mesh connectivity list (optional).
+* \param[in] dimension dimensionality of the mesh
 */
-MimmoObject::MimmoObject(int type, dvecarr3E & vertex, ivector2D * connectivity){
+MimmoObject::MimmoObject(int type, dvecarr3E & vertex, ivector2D * connectivity, short int dimension){
     m_type = max(1,type);
+    m_dimension = 0;
     m_internalPatch = true;
     const int id = 0;
     if (m_type == 2){
-        m_patch = new VolUnstructured(id, 3);
+        m_dimension = (short)max((int)dimension,3);
+        if (m_dimension < 1) m_dimension=3;
+        m_patch = new VolUnstructured(id, m_dimension);
         dynamic_cast<VolUnstructured*> (m_patch)->setExpert(true);
     }else{
         m_patch = new SurfUnstructured(id);
@@ -105,14 +113,27 @@ MimmoObject::MimmoObject(int type, dvecarr3E & vertex, ivector2D * connectivity)
         int sizeConn = (*connectivity)[0].size();
         sizeCell = connectivity->size();
         
+        auto dim = getDimension();
+        
         switch(m_type){
             case 1: 
                 if(sizeConn == 3)	eltype = bitpit::ElementInfo::TRIANGLE;
                 if(sizeConn == 4)	eltype = bitpit::ElementInfo::QUAD;	
                 break;
             case 2: 
-                if(sizeConn == 4)	eltype = bitpit::ElementInfo::TETRA;
-                if(sizeConn == 8)	eltype = bitpit::ElementInfo::HEXAHEDRON;	
+                if(dim == 3){
+                    if(sizeConn == 4)   eltype = bitpit::ElementInfo::TETRA;
+                    if(sizeConn == 5)   eltype = bitpit::ElementInfo::PYRAMID;
+                    if(sizeConn == 6)   eltype = bitpit::ElementInfo::WEDGE;
+                    if(sizeConn == 8)   eltype = bitpit::ElementInfo::HEXAHEDRON;
+                }   
+                if(dim == 2){
+                    if(sizeConn == 3)   eltype = bitpit::ElementInfo::TRIANGLE;
+                    if(sizeConn == 4)   eltype = bitpit::ElementInfo::QUAD; 
+                }
+                if(dim == 1){
+                    if(sizeConn == 2)   eltype = bitpit::ElementInfo::LINE; 
+                }
                 break;
             case 4: 
                 if(sizeConn == 2)	eltype = bitpit::ElementInfo::LINE;	
@@ -159,7 +180,7 @@ MimmoObject::MimmoObject(int type, dvecarr3E & vertex, ivector2D * connectivity)
 /*!
 * Custom constructor of MimmoObject.
 * This constructor builds a geometry data structure soft linking to an external bitpit::PatchKernel object.
-* The mesh type needs to be specified (see default constructor MimmoObject(int type) doc).
+* The mesh type needs to be specified (see default constructor MimmoObject doxy).
 * \param[in] type type of mesh
 * \param[in] geometry pointer to a geometry of class PatchKernel to be linked.
 */
@@ -191,28 +212,29 @@ MimmoObject::MimmoObject(const MimmoObject & other){
 * \param[in] other reference to another MimmoObject
 */
 MimmoObject & MimmoObject::operator=(const MimmoObject & other){
-    m_type 			= other.m_type;
+    m_type          = other.m_type;
+    m_dimension     = other.m_dimension; 
     if(m_patch != NULL){
         if (m_internalPatch)    delete m_patch;
         m_patch = NULL;
     }
-    m_patch 		= other.m_patch;
+    m_patch         = other.m_patch;
     m_internalPatch = false;
     
-    m_mapData		= other.m_mapData;
-    m_mapCell		= other.m_mapCell;
-    m_mapDataInv	= other.m_mapDataInv;
-    m_mapCellInv	= other.m_mapCellInv;
-    m_pidsType		= other.m_pidsType;
+    m_mapData       = other.m_mapData;
+    m_mapCell       = other.m_mapCell;
+    m_mapDataInv    = other.m_mapDataInv;
+    m_mapCellInv    = other.m_mapCellInv;
+    m_pidsType      = other.m_pidsType;
     
-    m_bvTreeSupported = other.m_bvTreeSupported;
-    m_bvTreeBuilt   = other.m_bvTreeBuilt;
-    m_kdTreeBuilt   = other.m_kdTreeBuilt;
-    m_bvTreeSync   = other.m_bvTreeSync;
-    m_kdTreeSync   = other.m_kdTreeSync;
+    m_bvTreeSupported   = other.m_bvTreeSupported;
+    m_bvTreeBuilt       = other.m_bvTreeBuilt;
+    m_kdTreeBuilt       = other.m_kdTreeBuilt;
+    m_bvTreeSync        = other.m_bvTreeSync;
+    m_kdTreeSync        = other.m_kdTreeSync;
 
-    if(m_bvTreeSupported && m_bvTreeBuilt)	buildBvTree();
-    if(m_kdTreeBuilt)	buildKdTree();
+    if(m_bvTreeSupported && m_bvTreeBuilt)  buildBvTree();
+    if(m_kdTreeBuilt)   buildKdTree();
 
     m_AdjBuilt = other.m_AdjBuilt;
 
@@ -227,6 +249,7 @@ MimmoObject & MimmoObject::operator=(const MimmoObject & other){
 void
 MimmoObject::clear(){
     m_type=1;
+    m_dimension = 0;
     if(m_patch != NULL){
         if (m_internalPatch)    delete m_patch;
         m_patch = NULL;
@@ -268,13 +291,25 @@ MimmoObject::isBvTreeSupported(){
 
 /*!
  * Return the type of mesh currently hold by the class 
- * (for type of mesh allowed see MimmoObject(int type) documentation).
+ * (for type of mesh allowed see MimmoObject constructor documentation).
  * \return integer flag for mesh type
  */
 int
 MimmoObject::getType(){
     return m_type;
 };
+
+/*!
+ * Return the dimension of mesh currently hold by the class.  
+ * The method return 1,2,3 only for the case of volume mesh(type 2). 
+ * Return 0 for all other cases. 
+ * \return integer flag for mesh dimension type
+ */
+short int
+MimmoObject::getDimension(){
+    return m_dimension;
+};
+
 
 /*!
  * Return the total number of vertices within the data structure.
@@ -885,6 +920,8 @@ MimmoObject::setPatch(int type, PatchKernel* geometry){
     if (geometry == NULL ) return false;
     if (type<1 || type >4 ) return false;
     m_type 			= type;
+    m_dimension = 0;
+    if(m_type == 2) m_dimension = geometry->getDimension();
     m_patch 		= geometry;
     m_internalPatch = false;
     
@@ -1031,12 +1068,12 @@ void MimmoObject::setSOFTCopy(const MimmoObject * other){
  */
 void MimmoObject::setHARDCopy(const MimmoObject * other){
     clear();
-    m_type 			= other->m_type;
-    
+    m_type      = other->m_type;
+    m_dimension = other->m_dimension; 
     m_internalPatch = true;
     const int id = 0;
     if (m_type == 2){
-        m_patch = new VolUnstructured(id, 3);
+        m_patch = new VolUnstructured(id, m_dimension);
         dynamic_cast<VolUnstructured*> (m_patch)->setExpert(true);
     }else{
         m_patch = new SurfUnstructured(id);
@@ -1310,7 +1347,8 @@ livector1D	MimmoObject::extractPIDCells(shivector1D flag){
  */
 int MimmoObject::checkCellType(bitpit::ElementInfo::Type type){
     int check = -1;
-    int patchType =getType();
+    int patchType = getType();
+    short int dim = getDimension();
     
     switch(patchType){
         case 1:
@@ -1318,10 +1356,19 @@ int MimmoObject::checkCellType(bitpit::ElementInfo::Type type){
             if  (type == bitpit::ElementInfo::QUAD)         check = 4;
             break;
         case 2:
-            if  (type == bitpit::ElementInfo::TETRA)        check = 4;
-            if  (type == bitpit::ElementInfo::PYRAMID)      check = 5;
-            if  (type == bitpit::ElementInfo::WEDGE)        check = 6;
-            if  (type == bitpit::ElementInfo::HEXAHEDRON)   check = 8;
+            if(dim == 3){
+                if  (type == bitpit::ElementInfo::TETRA)        check = 4;
+                if  (type == bitpit::ElementInfo::PYRAMID)      check = 5;
+                if  (type == bitpit::ElementInfo::WEDGE)        check = 6;
+                if  (type == bitpit::ElementInfo::HEXAHEDRON)   check = 8;
+            }
+            if(dim == 2){
+                if  (type == bitpit::ElementInfo::TRIANGLE)     check = 3;
+                if  (type == bitpit::ElementInfo::QUAD)         check = 4;
+            }
+            if(dim == 1 ){
+                if  (type == bitpit::ElementInfo::LINE)         check = 2;
+            }
             break;
         case 3:
             if (type == bitpit::ElementInfo::VERTEX)        check = 1;
@@ -1470,8 +1517,19 @@ bitpit::VTKElementType	MimmoObject::desumeElement(){
         case	2:
             if(getNCells() == 0) 		return result;
             conn = getCellConnectivity((*(getCells().begin())).getId());
-            if(conn.size() == 4)		result = bitpit::VTKElementType::TETRA;
-            if(conn.size() == 8)		result = bitpit::VTKElementType::HEXAHEDRON;
+            if(m_dimension == 3){
+                if  (conn.size() == 4)  result = bitpit::VTKElementType::TETRA;
+                if  (conn.size() == 5)  result = bitpit::VTKElementType::PYRAMID;
+                if  (conn.size() == 6)  result = bitpit::VTKElementType::WEDGE;
+                if  (conn.size() == 8)  result = bitpit::VTKElementType::HEXAHEDRON;
+            }
+            if(m_dimension == 2){
+                if(conn.size() == 3)        result = bitpit::VTKElementType::TRIANGLE;
+                if(conn.size() == 4)        result = bitpit::VTKElementType::QUAD;
+            }
+            if(m_dimension == 1 ){
+                result = bitpit::VTKElementType::VERTEX;
+            }
         case	3:
             result = bitpit::VTKElementType::VERTEX;
             break;
