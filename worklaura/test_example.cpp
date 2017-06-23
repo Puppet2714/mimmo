@@ -86,7 +86,7 @@ int test4() {
     reader->setWriteDir(".");
     reader->setWriteFilename("out-example");
     reader->setWriteFileType(FileType::SQVTUPLANAR);
-    reader->setCodex(false);
+    reader->setCodex();
     reader->execute();
     
     auto obj = reader->getGeometry();
