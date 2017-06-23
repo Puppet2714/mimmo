@@ -174,4 +174,16 @@ void    warningXML(bitpit::Logger* log, std::string name){
     (*log)<<"warning in custom xml " << name << " constructor. No valid xml data found"<<std::endl;
 }
 
+/*!Maximum value function for MimmoPiercedVector<double>.
+ * \param[in] field MimmoPiercedVector<double>
+ * \return Maximum value
+ */
+double  maxvalmp(const MimmoPiercedVector<double, long int> & field){
+    double val = 1.0e-18;
+    for (auto v : field){
+        val = std::max(val,v);
+    }
+    return val;
+}
+
 }//end mimmo namespace
