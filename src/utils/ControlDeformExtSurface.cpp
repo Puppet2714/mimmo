@@ -543,6 +543,10 @@ ControlDeformExtSurface::execute(){
         }
         ++counterExtGeo;
     }
+
+    m_violationField.setGeometry(getGeometry());
+    m_violationField.setName("violation");
+
 };
 
 /*!
