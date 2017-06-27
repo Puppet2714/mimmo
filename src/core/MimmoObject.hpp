@@ -55,10 +55,6 @@ protected:
     int                                     m_type;            /**<Type of geometry (0 = undefined, 1 = surface mesh, 2 = volume mesh, 3-point cloud mesh, 4-3DCurve). */
     bitpit::PatchKernel*                    m_patch;           /**<Reference to bitpit patch handling geometry. */
     bool                                    m_internalPatch;   /**<True if the geometry is internally created. */
-//    livector1D                              m_mapData;         /**<Map of vertex ids actually set, for aligning external vertex data to bitpit::PatchKernel ordering */
-//    livector1D                              m_mapCell;         /**<Map of cell ids actually set, for aligning external cell data to bitpit::PatchKernel ordering*/
-//    liimap                                  m_mapDataInv;      /**<Inverse of Map of vertex ids actually set, for aligning external vertex data to bitpit::Patch ordering */
-//    liimap                                  m_mapCellInv;     /**<Inverse of Map of cell ids actually set, for aligning external vertex data to bitpit::Patch ordering */
 
     std::unordered_set<short>               m_pidsType;        /**<pid type available for your geometry */
 
@@ -68,7 +64,6 @@ protected:
     bool                                    m_kdTreeBuilt;     /**< track correct building of kdtree along eith geometry modifications */
     bool                                    m_bvTreeSupported; /**< Flag for geometries not supporting bvTree building*/
 
-    //TODO temporary flags for modifying vertices -> ambigous effect on bvTree, kdTree
     bool                                    m_bvTreeSync;    /**< set false if Bv tree is not sync'd with geometry modifications */
     bool                                    m_kdTreeSync;    /**< set false if Bv tree is not sync'd with geometry modifications */
 
@@ -106,16 +101,6 @@ public:
 
     bitpit::PatchKernel*                            getPatch();
 
-//    livector1D&                                     getMapData();
-//    long                                            getMapData(int i);
-//    liimap&                                         getMapDataInv();
-//    const liimap&                                   getMapDataInv()const;
-//    int                                             getMapDataInv(long id);
-//    livector1D&                                     getMapCell();
-//    long                                            getMapCell(int i);
-//    liimap&                                         getMapCellInv();
-//    int                                             getMapCellInv(long id);
-
     std::unordered_set<short> &                     getPIDTypeList();
     shivector1D                                     getCompactPID();
     std::unordered_map<long, short>                 getPID();
@@ -137,8 +122,6 @@ public:
     bool        addConnectedCell(const livector1D & locConn, bitpit::ElementInfo::Type type, short PID, long idtag = bitpit::Cell::NULL_ID);
 
     bool        setPatch(int type, bitpit::PatchKernel* geometry);
-//    bool        setMapData();
-//    bool        setMapCell();
 
     void        setPID(shivector1D ); 
     void        setPID(std::unordered_map<long, short>  ); 
@@ -151,10 +134,6 @@ public:
 
     livector1D  getVertexFromCellList(livector1D cellList);
     livector1D  getCellFromVertexList(livector1D vertList);
-//    livector1D  convertLocalToVertexID(ivector1D);
-//    ivector1D   convertVertexIDToLocal(livector1D);
-//    livector1D  convertLocalToCellID(ivector1D);
-//    ivector1D   convertCellIDToLocal(livector1D);
 
     livector1D  extractBoundaryVertexID();
     livector1D  extractPIDCells(short);
