@@ -784,7 +784,7 @@ MimmoGeometry::read(){
 
         //count PID if multi-solid
         auto & map = getGeometry()->getPIDTypeList();
-        for(auto & cell : getGeometry()->getCells() ){
+        for(const auto & cell : getGeometry()->getCells() ){
             map.insert(cell.getPID());
         }
     }
@@ -819,10 +819,10 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveVertices(sizeV);
         m_intgeo->getPatch()->reserveCells(sizeC);
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
 
         int ccell = 0;
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -871,8 +871,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
         int ccell = 0;
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -921,8 +921,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
         int ccell = 0;
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -972,8 +972,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
         int ccell = 0;
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -1021,8 +1021,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -1055,7 +1055,7 @@ MimmoGeometry::read(){
         int sizeV = Ipoints.size();
         m_intgeo->getPatch()->reserveVertices(sizeV);
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
 
     }
     break;
@@ -1081,7 +1081,7 @@ MimmoGeometry::read(){
         int sizeV;
         sizeV = Ipoints.size();
         m_intgeo->getPatch()->reserveVertices(sizeV);
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
 
     }
     break;
@@ -1112,8 +1112,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveVertices(sizeV);
         m_intgeo->getPatch()->reserveCells(sizeC);
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){

@@ -239,7 +239,7 @@ OBBox::execute(){
 
     dmatrix33E trasp = bitpit::linearalgebra::transpose(m_axes);
 
-    for(auto & vert: getGeometry()->getVertices()){
+    for(const auto & vert: getGeometry()->getVertices()){
         darray3E coord = vert.getCoords();
         for(int i=0;i<3; ++i){
             val = dotProduct(coord, m_axes[i]);
@@ -276,7 +276,7 @@ OBBox::execute(){
         trasp[i][i] = 1.0;
     }
 
-    for(auto & vert: getGeometry()->getVertices()){
+    for(const auto & vert: getGeometry()->getVertices()){
         darray3E coord = vert.getCoords();
         for(int i=0;i<3; ++i){
             val = dotProduct(coord, trasp[i]);
@@ -413,13 +413,13 @@ OBBox::evaluateCovarianceMatrix( dmatrix33E & covariance, darray3E & eta){
     if(getGeometry()->getType() == 3){
         size = getGeometry()->getNVertex();
         //evaluate eta;
-        for(auto & vert: getGeometry()->getVertices()){
+        for(const auto & vert: getGeometry()->getVertices()){
             eta += vert.getCoords();
         }
         eta /= (double)size;
 
         //evaluate covariance
-        for(auto & vert: getGeometry()->getVertices()){
+        for(const auto & vert: getGeometry()->getVertices()){
             temp = vert.getCoords() - eta;
 
             for(int j=0; j<3; ++j){
@@ -443,7 +443,7 @@ OBBox::evaluateCovarianceMatrix( dmatrix33E & covariance, darray3E & eta){
         bitpit::SurfUnstructured * tri = static_cast<bitpit::SurfUnstructured * >(getGeometry()->getPatch());
         area.resize(size);
         counter = 0;
-        for(auto &cell : tri->getCells()){
+        for(const auto &cell : tri->getCells()){
             area[counter] = tri->evalCellArea(cell.getId());
             areaTot +=area[counter];
             ++counter;
@@ -454,7 +454,7 @@ OBBox::evaluateCovarianceMatrix( dmatrix33E & covariance, darray3E & eta){
         counter = 0;
         darray3E pp;
         long vCount;
-        for(auto & cell: tri->getCells()){
+        for(const auto & cell: tri->getCells()){
             vCount = cell.getVertexCount();
             pp.fill(0.0);
             for(int kk=0; kk<vCount; ++kk){
@@ -470,7 +470,7 @@ OBBox::evaluateCovarianceMatrix( dmatrix33E & covariance, darray3E & eta){
 
         counter = 0;
         dvecarr3E p2;
-        for(auto & cell: tri->getCells()){
+        for(const auto & cell: tri->getCells()){
             vCount = cell.getVertexCount();
             p2.resize(vCount);
             for(int kk=0; kk<vCount; ++kk){
@@ -602,7 +602,7 @@ OBBox::adjustBasis(dmatrix33E & eigVec, darray3E & eigVal){
 
     dmatrix33E axes, trasp;
     int counter=0;
-    for(auto & val: eigVec){
+    for(const auto & val: eigVec){
         axes[counter] = val;
         ++counter;
     }
@@ -630,7 +630,7 @@ OBBox::adjustBasis(dmatrix33E & eigVec, darray3E & eigVal){
 
         //trasp = bitpit::linearalgebra::transpose(axes);
 
-        for(auto & vert: getGeometry()->getVertices()){
+        for(const auto & vert: getGeometry()->getVertices()){
             darray3E coord = vert.getCoords();
             for(int i=0;i<3; ++i){
                 val = dotProduct(coord, axes[i]); //trasp[i]);
@@ -665,7 +665,7 @@ OBBox::adjustBasis(dmatrix33E & eigVec, darray3E & eigVal){
         //trasp = bitpit::linearalgebra::transpose(axes);
         pmin.fill(1.e18);
         pmax.fill(-1.e18);
-        for(auto & vert: getGeometry()->getVertices()){
+        for(const auto & vert: getGeometry()->getVertices()){
             darray3E coord = vert.getCoords();
             for(int i=0;i<3; ++i){
                 val = dotProduct(coord,axes[i]); // trasp[i]);
@@ -686,7 +686,7 @@ OBBox::adjustBasis(dmatrix33E & eigVec, darray3E & eigVal){
         trasp = bitpit::linearalgebra::transpose(axes);
         pmin.fill(1.e18);
         pmax.fill(-1.e18);
-        for(auto & vert: getGeometry()->getVertices()){
+        for(const auto & vert: getGeometry()->getVertices()){
             darray3E coord = vert.getCoords();
             for(int i=0;i<3; ++i){
                 val = dotProduct(coord,axes[i]); // trasp[i]);

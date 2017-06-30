@@ -222,7 +222,7 @@ void BvTree::buildTree()
     long id;
 
     //fill ids and centroid
-    for ( auto & cell : m_patch->getCells() )
+    for ( const auto & cell : m_patch->getCells() )
     {
         id = cell.getId();
         m_elements[iel].m_label = id;

@@ -171,7 +171,7 @@ RotationGeometry::execute(){
     darray3E point, rotated;
     long ID;
     darray3E value;
-    for (auto vertex : m_geometry->getVertices()){
+    for (const auto & vertex : m_geometry->getVertices()){
         point = vertex.getCoords();
         ID = vertex.getId();
 
@@ -203,7 +203,7 @@ RotationGeometry::apply(){
     if (getGeometry() == NULL || m_displ.getGeometry() != getGeometry()) return;
     darray3E vertexcoords;
     long int ID;
-    for (auto vertex : m_geometry->getVertices()){
+    for (const auto & vertex : m_geometry->getVertices()){
         vertexcoords = vertex.getCoords();
         ID = vertex.getId();
         vertexcoords += m_displ[ID];
@@ -222,7 +222,7 @@ RotationGeometry::checkFilter(){
         m_filter.clear();
         m_filter.setGeometry(m_geometry);
         m_filter.setName("M_FILTER");
-        for (auto vertex : m_geometry->getVertices()){
+        for (const auto & vertex : m_geometry->getVertices()){
             m_filter.insert(vertex.getId(), 1.0);
         }
     }

@@ -110,7 +110,7 @@ double
 ControlDeformExtSurface::getViolation(){
 
     double result = -1.0E+18;
-    for(auto & val : m_violationField){
+    for(const auto & val : m_violationField){
         result = std::fmax(result, val);
     }
 
@@ -283,7 +283,7 @@ ControlDeformExtSurface::execute(){
     m_violationField.clear();
 
     long int ID;
-    for (auto & v : geo->getVertices()){
+    for (const auto & v : geo->getVertices()){
         ID = v.getId();
         m_violationField.insert(ID, -1.0e+18);
     }
@@ -298,18 +298,18 @@ ControlDeformExtSurface::execute(){
     darray3E geoBary = {{0.0,0.0,0.0}};
     double distBary = 0.0;
 
-    for(auto & p: points)    geoBary += p;
+    for(const auto & p: points)    geoBary += p;
 
     geoBary /= (double)geo->getNVertex();
 
-    for(auto & p: points){
+    for(const auto & p: points){
         distBary= std::fmax(distBary,norm2(p-geoBary));
     }
     //***************************************************************
 
     //adding deformation to points **********************************
     int count = 0;
-    for (auto & v : geo->getVertices()){
+    for (const auto & v : geo->getVertices()){
         ID = v.getId();
         points[count] +=m_defField[ID];
         ++count;
@@ -329,7 +329,7 @@ ControlDeformExtSurface::execute(){
     darray3E bbMinDef, bbMaxDef, bbMin, bbMax;
     {
         int count2 = 0;
-        for(auto & p : points){
+        for(const auto & p : points){
             if(count2 == 0)    {
                 bbMinDef = p;
                 bbMaxDef = p;
@@ -342,7 +342,7 @@ ControlDeformExtSurface::execute(){
             count2++;
         }
         count2=0;
-        for(auto & p : pointsOR){
+        for(const auto & p : pointsOR){
             for(int i=0; i<3; ++i ){
                 bbMinDef[i] = std::fmin(bbMinDef[i], p[i]);
                 bbMaxDef[i] = std::fmax(bbMaxDef[i], p[i]);
@@ -353,7 +353,7 @@ ControlDeformExtSurface::execute(){
     //***************************************************************
     int counterExtGeo =0;
     // start examining all external geometries***********************
-    for(auto &gg : extgeo){
+    for(const auto &gg : extgeo){
 
         //check constraints properties ******************************
         MimmoObject * local = gg->getGeometry();
@@ -371,7 +371,7 @@ ControlDeformExtSurface::execute(){
         bbMin = bbMinDef;
         bbMax = bbMaxDef;
 
-        for(auto & p : local->getVertexCoords()){
+        for(const auto & p : local->getVertexCoords()){
             for(int i=0; i<3; ++i ){
                 bbMin[i] = std::fmin(bbMin[i], p[i]);
                 bbMax[i] = std::fmax(bbMax[i], p[i]);
@@ -445,7 +445,7 @@ ControlDeformExtSurface::execute(){
             //calculate distance on point of background grid.
             dvecarr3E background_points(mesh->getVertexCount());
             int count = 0;
-            for(auto & v: mesh->getVertices()){
+            for(const auto & v: mesh->getVertices()){
                 background_points[count] = v.getCoords();
                 count++;
             }
@@ -735,7 +735,7 @@ ControlDeformExtSurface::plotOptionalResults(){
     dvecarr3E  points = getGeometry()->getVertexCoords(&map);
     dvecarr3E deff(m_defField.size());
     int count = 0;
-    for (auto f : m_defField){
+    for (const auto & f : m_defField){
         deff[count] = f;
         ++count;
     }
@@ -753,7 +753,7 @@ ControlDeformExtSurface::plotOptionalResults(){
 
     dvector1D viol(m_violationField.size());
     count = 0;
-    for (auto f : m_violationField){
+    for (const auto & f : m_violationField){
         viol[count] = f;
         ++count;
     }

@@ -512,7 +512,7 @@ MRBF::execute(){
     m_displ.clear();
     dvector1D displ;
     darray3E adispl;
-    for(auto vertex : container->getVertices()){
+    for(const auto & vertex : container->getVertices()){
         displ = RBF::evalRBF(vertex.getCoords());
         for (int j=0; j<3; ++j)
             adispl[j] = displ[j];
@@ -525,7 +525,7 @@ MRBF::execute(){
         checkFilter();
 
         long int ID;
-        for (auto & vertex : m_geometry->getVertices()){
+        for (const auto & vertex : m_geometry->getVertices()){
             ID = vertex.getId();
             m_displ[ID] = m_displ[ID] * m_filter[ID];
         }
@@ -545,7 +545,7 @@ MRBF::apply(){
     if (getGeometry() == NULL || m_displ.getGeometry() != getGeometry()) return;
     darray3E vertexcoords;
     long int ID;
-    for (auto vertex : m_geometry->getVertices()){
+    for (const auto & vertex : m_geometry->getVertices()){
         vertexcoords = vertex.getCoords();
         ID = vertex.getId();
         vertexcoords += m_displ[ID];
@@ -564,7 +564,7 @@ MRBF::checkFilter(){
         m_filter.clear();
         m_filter.setGeometry(m_geometry);
         m_filter.setName("M_FILTER");
-        for (auto vertex : m_geometry->getVertices()){
+        for (const auto & vertex : m_geometry->getVertices()){
             m_filter.insert(vertex.getId(), 1.0);
         }
     }
