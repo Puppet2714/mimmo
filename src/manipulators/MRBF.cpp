@@ -257,7 +257,6 @@ void
 MRBF::setNode(dvecarr3E nodes){
     removeAllNodes();
     RBF::addNode(nodes);
-
 };
 
 /*!Set the RBF points as control nodes extracting
