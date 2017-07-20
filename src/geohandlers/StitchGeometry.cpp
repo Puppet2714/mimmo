@@ -94,9 +94,6 @@ StitchGeometry & StitchGeometry::operator=(const StitchGeometry & other){
 
     m_topo = other.m_topo;
     m_extgeo = other.m_extgeo;
-
-    m_buildBvTree = other.m_buildBvTree;
-    m_buildKdTree = other.m_buildKdTree;
     m_geocount = other.m_geocount;
 
     //warning the internal data structure and its division map is not copied. Relaunch the execution eventually to fill it.
@@ -109,16 +106,11 @@ StitchGeometry & StitchGeometry::operator=(const StitchGeometry & other){
 void
 StitchGeometry::buildPorts(){
     bool built = true;
-    built = (built && createPortIn<std::vector<MimmoObject*>, StitchGeometry>(this, &mimmo::StitchGeometry::setGeometry, PortType::M_VECGEOM, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortIn<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::setAddGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
+    built = (built && createPortIn<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::addGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true, 1));
 
     built = (built && createPortOut<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::getGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortOut<std::vector<MimmoObject*>, StitchGeometry>(this, &mimmo::StitchGeometry::getOriginalGeometries, PortType::M_VECGEOM, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortOut<std::unordered_map<long,std::pair<int, long> >, StitchGeometry>(this, &mimmo::StitchGeometry::getCellDivisionMap, PortType::M_MAPDCELL, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::LONGPAIRINTLONG));
-    built = (built && createPortOut<std::unordered_map<long,std::pair<int, long> >, StitchGeometry>(this, &mimmo::StitchGeometry::getVertDivisionMap, PortType::M_MAPDVERT, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::LONGPAIRINTLONG));
     m_arePortsBuilt = built;
 }
-
 
 /*!
  * Return kind of topology supported by the object.
@@ -127,20 +119,6 @@ StitchGeometry::buildPorts(){
 int 
 StitchGeometry::getTopology(){
     return m_topo;
-}
-
-
-/*!
- * Get list of input original geometries.
- * \return Pointers to original geometries.
- */
-std::vector<MimmoObject *> 
-StitchGeometry::getOriginalGeometries(){
-    std::vector<MimmoObject * > res(m_extgeo.size());
-    for(auto & val: m_extgeo){
-        res[val.second] = val.first;
-    }
-    return res;
 }
 
 /*!
@@ -153,37 +131,12 @@ StitchGeometry::getGeometry(){
 }
 
 /*!
- * Get the complete map of the stitched object cell ids vs original geometries cell ids.
- * The map reports as key the actual id of the cell in the stitched object and a pair argument
- * with an integer id identifying the original part which belongs and the cell-id it had in the original
- * geometry structure.
- * Please note the part identifier numbering follows the order of the original geometry list m_extgeo.
- * \return map with cells IDs of the stitched geometry and pair of local and global cells IDs of input geometries
- */
-std::unordered_map<long, std::pair<int,long> >
-StitchGeometry::getCellDivisionMap(){
-    return m_mapCellDivision;
-}
-
-/*!
- * Get the complete map of the stiched object vertex ids vs original geometries vertex ids.
- * The map reports as key the actual id of the vertex in the stitched object and a pair argument
- * with an integer id identifying the original part which belongs and the vertex-id it had in the original
- * geometry structure. Please note the part identifier numbering follows the order of the original geometry list m_extgeo.
- * \return map with vertices IDs of the stitched geometry and pair of local and global vertices IDs of input geometries
- */
-std::unordered_map<long, std::pair<int,long> >
-StitchGeometry::getVertDivisionMap(){
-    return m_mapVertDivision;
-}
-
-/*!
  * Add an external geometry to be stitched.Topology of the geometry must be coeherent
  * with topology of the class;
  * \param[in] geo  Pointer to MimmoObject
  */
 void
-StitchGeometry::setAddGeometry(MimmoObject* geo){
+StitchGeometry::addGeometry(MimmoObject* geo){
     if(geo->isEmpty()) return;
     if(geo->getType() != m_topo)    return;
     if(m_extgeo.count(geo)    > 0)    return;
@@ -191,37 +144,6 @@ StitchGeometry::setAddGeometry(MimmoObject* geo){
     m_extgeo.insert(std::make_pair(geo,m_geocount) );
     m_geocount++;
 };
-
-/*!
- * Set geometries to be stitched. List will be saved as is, replacing any other saved list. 
- * Reimplementation of BaseManipulation::setGeometry
- * \param[in] external Pointer to stitched geometry.
- */
-void
-StitchGeometry::setGeometry(std::vector<MimmoObject *> external){
-
-    for(auto & obj: external){
-        setAddGeometry(obj);
-    }
-};
-
-/*!It sets if the BvTree of stitched geometry has to be built during execution.
- * \param[in] build If true the BvTree is built in execution and stored in
- * the related MimmoObject member.
- */
-void
-StitchGeometry::setBuildBvTree(bool build){
-    m_buildBvTree = build;
-}
-
-/*!It sets if the KdTree of all the patch geometries has to be built during execution.
- * \param[in] build If true the KdTree is built in execution and stored in
- * the related MimmoObject member.
- */
-void
-StitchGeometry::setBuildKdTree(bool build){
-    m_buildKdTree = build;
-}
 
 /*!
  * Check if stitched geometry is present or not.
@@ -240,8 +162,6 @@ StitchGeometry::clear(){
     m_extgeo.clear();
     m_geocount = 0;
     m_patch.reset(nullptr);
-    m_mapCellDivision.clear();
-    m_mapVertDivision.clear();
     BaseManipulation::clear();
 };
 
@@ -256,7 +176,6 @@ StitchGeometry::execute(){
     long nCells = 0;
     long nVerts = 0;
 
-
     for(auto &obj:m_extgeo){
         nCells += obj.first->getNCells();
         nVerts += obj.first->getNVertex();
@@ -266,15 +185,9 @@ StitchGeometry::execute(){
     dum->getPatch()->reserveVertices(nVerts);
     dum->getPatch()->reserveCells(nCells);
 
-    //clean maps
-    m_mapCellDivision.clear();
-    m_mapVertDivision.clear();
-
     long cV = 0, cC = 0;
 
     //start filling your stitched object.
-    //divion maps will be filled coherently
-
     {
         //optional vars;
         long vId, cId;
@@ -283,39 +196,39 @@ StitchGeometry::execute(){
 
         for(auto &obj : m_extgeo){
 
-            //start extracting/reversing vertices of the current obj
             std::unordered_map<long,long> mapVloc;
 
-            for(auto & vv : obj.first->getVertices()){
+            //start extracting/reversing vertices of the current obj
+            for(const auto & vv : obj.first->getVertices()){
                 vId = vv.getId();
                 dum->addVertex(obj.first->getVertexCoords(vId), cV);
                 //update map;
-                m_mapVertDivision[cV] = std::make_pair(obj.second, vId);
                 mapVloc[vId] = cV;
                 cV++;
             }
 
             //start extracting/reversing cells of the current obj
-            for(auto & cc : obj.first->getCells()){
+            for(const auto & cc : obj.first->getCells()){
                 cId = cc.getId();
                 PID = cc.getPID();
                 eltype = cc.getType();
                 //get the local connectivity and update with new vertex numbering;
                 livector1D conn = obj.first->getCellConnectivity(cId);
-                for(auto && ee: conn)    ee = mapVloc[ee];
-
-                dum->addConnectedCell(conn, eltype, PID, cC);
+                livector1D connloc(conn.size());
+                int ic = 0;
+                for (const auto & v : conn){
+                    connloc[ic] = mapVloc[v];
+                    ++ic;
+                }
+                dum->addConnectedCell(connloc, eltype, PID, cC);
                 //update map;
-                m_mapCellDivision[cC] = std::make_pair(obj.second, cId);
                 cC++;
             }
         }
     }//scope for optional vars;
 
-    if(m_buildBvTree)    dum->buildBvTree();
-    if(m_buildKdTree)    dum->buildKdTree();
-
     m_patch = std::move(dum);
+    m_patch->cleanGeometry();
 }
 
 /*!
@@ -342,27 +255,6 @@ void StitchGeometry::absorbSectionXML(const bitpit::Config::Section & slotXML, s
     }
 
     BaseManipulation::absorbSectionXML(slotXML, name);
-    
-    if(slotXML.hasOption("BvTree")){
-        input = slotXML.get("BvTree");
-        bool value = false;
-        if(!input.empty()){
-            std::stringstream ss(bitpit::utils::string::trim(input));
-            ss >> value;
-        }
-        setBuildBvTree(value);
-    };
-
-    if(slotXML.hasOption("KdTree")){
-        input = slotXML.get("KdTree");
-        bool value = false;
-        if(!input.empty()){
-            std::stringstream ss(bitpit::utils::string::trim(input));
-            ss >> value;
-        }
-        setBuildKdTree(value);
-    };
-
 };
 
 /*!
@@ -377,17 +269,6 @@ void StitchGeometry::flushSectionXML(bitpit::Config::Section & slotXML, std::str
     BaseManipulation::flushSectionXML(slotXML, name);
     slotXML.set("Topology", m_topo);
 
-    std::string output;
-
-    if(m_buildBvTree){
-        output = std::to_string(m_buildBvTree);
-        slotXML.set("BvTree", output);
-    }
-
-    if(m_buildKdTree){
-        output = std::to_string(m_buildKdTree);
-        slotXML.set("KdTree", output);
-    }
 };
 
 /*!

@@ -47,7 +47,7 @@ namespace mimmo{
    |-|-|-|-|
    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
    | 10    | M_DISPLS      | setVectorData     | (VECARR3, FLOAT)          |
-   | 19    | M_SCALARFIELD | setScalarData     | (VECTOR, FLOAT)           |
+   | 14    | M_DATAFIELD   | setScalarData     | (VECTOR, FLOAT)           |
    | 29    | M_PLANE       | setPlane          | (ARRAY4, FLOAT)           |
    | 20    | M_POINT       | setOrigin         | (ARRAY3, FLOAT)           |
    | 21    | M_AXIS        | setNormal         | (ARRAY3, FLOAT)           |
@@ -58,7 +58,7 @@ namespace mimmo{
    |-|-|-|-|
    |<B>PortID</B> | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>              |
    | 10    | M_DISPLS      | getCloudVectorData| (VECARR3, FLOAT)       |
-   | 19    | M_SCALARFIELD | getCloudScalarData| (VECTOR, FLOAT)        |
+   | 14    | M_DATAFIELD   | getCloudScalarData| (VECTOR, FLOAT)        |
 
 
   Inherited from ProjectCloud

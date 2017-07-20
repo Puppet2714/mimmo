@@ -45,17 +45,13 @@ namespace mimmo{
      |Port Input | | | |
      |-|-|-|-|
      |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 99    | M_GEOM   | setAddGeometry                     | (SCALAR, MIMMO_)      |
-     | 100   | M_VECGEOM| setGeometry                        | (VECTOR, MIMMO_)      |
+     | 99    | M_GEOM   | addGeometry                     | (SCALAR, MIMMO_)      |
 
 
      |Port Output | | | |
      |-|-|-|-|
      |<B>PortID</B> | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>              |
      | 99    | M_GEOM    | getGeometry                        | (SCALAR, MIMMO_)         |
-     | 100   | M_VECGEOM | getOriginalGeometries              | (VECTOR, MIMMO_)         |
-     | 104   | M_MAPDCELL| getCellDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)|
-     | 105   | M_MAPDVERT| getVertDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)|
 
  *    =========================================================
  *
@@ -69,8 +65,6 @@ namespace mimmo{
  *
  * Proper of the class:
  * - <B>Topology</B>: info on admissible topology format 1-surface, 2-volume, 3-pointcloud
- * - <B>BvTree</B>: evaluate bvTree true 1/false 0
- * - <B>KdTree</B>: evaluate kdTree true 1/false 0
  
  * Geometries have to be mandatorily passed through port.
  *
@@ -86,9 +80,6 @@ private:
     std::unordered_map<long, std::pair<int, long> > m_mapCellDivision; /**< division map of actual ID-cell, part Id, original ID-cell*/
     std::unordered_map<long, std::pair<int, long> > m_mapVertDivision; /**< division map of actual ID-vertex, part Id, original ID-vertex*/
 
-    bool        m_buildBvTree;                /**<If true build BvTree of stitched geometry. */
-    bool        m_buildKdTree;                /**<If true build KdTree of stitched geometry. */
-
     int m_geocount;                            /**<Internal geometry counter */
 
 public:
@@ -102,17 +93,9 @@ public:
     void buildPorts();
 
     int                             getTopology();
-    std::vector< MimmoObject *>     getOriginalGeometries();
-    MimmoObject *                     getGeometry();
+    MimmoObject *                   getGeometry();
 
-    std::unordered_map<long, std::pair<int, long> >    getCellDivisionMap();
-    std::unordered_map<long, std::pair<int, long> >    getVertDivisionMap();
-
-    void        setAddGeometry(MimmoObject * geo);
-    void        setGeometry( std::vector<MimmoObject *> list);
-
-    void        setBuildBvTree(bool build);
-    void        setBuildKdTree(bool build);
+    void        addGeometry(MimmoObject * geo);
 
     bool         isEmpty();
 

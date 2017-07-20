@@ -87,10 +87,9 @@ ScaleGeometry::buildPorts(){
     bool built = true;
     built = (built && createPortIn<darray3E, ScaleGeometry>(&m_origin, PortType::M_POINT, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<darray3E, ScaleGeometry>(&m_scaling, PortType::M_SPAN, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<dvector1D, ScaleGeometry>(this, &mimmo::ScaleGeometry::setFilter, PortType::M_FILTER, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
+    built = (built && createPortIn<dmpvector1D, ScaleGeometry>(this, &mimmo::ScaleGeometry::setFilter, PortType::M_FILTER, mimmo::pin::containerTAG::MPVECTOR, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<MimmoObject*, ScaleGeometry>(&m_geometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true));
-    built = (built && createPortOut<dvecarr3E, ScaleGeometry>(this, &mimmo::ScaleGeometry::getDisplacements, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<std::pair<MimmoObject*, dvecarr3E*> , ScaleGeometry>(this, &mimmo::ScaleGeometry::getDeformedField, PortType::M_PAIRVECFIELD, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
+    built = (built && createPortOut<dmpvecarr3E, ScaleGeometry>(this, &mimmo::ScaleGeometry::getDisplacements, PortType::M_GDISPLS, mimmo::pin::containerTAG::MPVECARR3, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortOut<MimmoObject*, ScaleGeometry>(this, &BaseManipulation::getGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
     m_arePortsBuilt = built;
 };
@@ -124,7 +123,7 @@ ScaleGeometry::setScaling(darray3E scaling){
  * \param[in] filter filter field defined on geometry vertices.
  */
 void
-ScaleGeometry::setFilter(dvector1D filter){
+ScaleGeometry::setFilter(dmpvector1D filter){
     m_filter = filter;
 }
 
@@ -132,23 +131,9 @@ ScaleGeometry::setFilter(dvector1D filter){
  * Return actual computed displacements field (if any) for the geometry linked.
  * \return  deformation field
  */
-dvecarr3E
+dmpvecarr3E
 ScaleGeometry::getDisplacements(){
     return m_displ;
-};
-
-/*!
- * Return actual computed deformation field (if any) for the geometry linked.
- * If no field is actually present, return null pointers;
- * \return     std::pair of pointers linking to actual geometry pointed by the class, and the computed deformation field on its vertices
- */
-std::pair<MimmoObject * , dvecarr3E * >
-ScaleGeometry::getDeformedField(){
-
-    std::pair<MimmoObject *, dvecarr3E * > pairField;
-    pairField.first = getGeometry();
-    pairField.second = &m_displ;
-    return pairField;
 };
 
 /*!Execution command. It perform the scaling by computing the displacements
@@ -159,32 +144,31 @@ ScaleGeometry::execute(){
 
     if (getGeometry() == NULL) return;
 
-    int nV = m_geometry->getNVertex();
-    m_displ.resize(nV);
-    m_filter.resize(nV, 1.0);
+    checkFilter();
 
+    m_displ.clear();
 
     long ID;
-    int idx;
-    liimap mapID = m_geometry->getMapDataInv();
-
+    darray3E value;
     //computing centroid
+    int nV = m_geometry->getNVertex();
     darray3E center = m_origin;
     if (m_meanP){
         center.fill(0.0);
-        for (auto vertex : m_geometry->getVertices()){
+        for (const auto & vertex : m_geometry->getVertices()){
             ID = vertex.getId();
-            idx = mapID[ID];
             center += vertex.getCoords() / double(nV);
         }
     }
-    for (auto vertex : m_geometry->getVertices()){
+    for (const auto & vertex : m_geometry->getVertices()){
         ID = vertex.getId();
-        idx = mapID[ID];
 
         darray3E coords = vertex.getCoords();
-        m_displ[idx] = ( m_scaling*(coords - center) + center ) * m_filter[idx] - coords;
+        value = ( m_scaling*(coords - center) + center ) * m_filter[ID] - coords;
+        m_displ.insert(ID, value);
     }
+    m_displ.setGeometry(getGeometry());
+    m_displ.setName("M_GDISPLS");
 };
 
 /*!
@@ -193,16 +177,32 @@ ScaleGeometry::execute(){
 void
 ScaleGeometry::apply(){
 
-    if (getGeometry() == NULL) return;
-    dvecarr3E vertex = getGeometry()->getVertexCoords();
-    long nv = getGeometry()->getNVertex();
-    nv = long(std::min(int(nv), int(m_displ.size())));
-    livector1D & idmap = getGeometry()->getMapData();
-    for (long i=0; i<nv; i++){
-        vertex[i] += m_displ[i];
-        getGeometry()->modifyVertex(vertex[i], idmap[i]);
+    if (getGeometry() == NULL || m_displ.getGeometry() != getGeometry()) return;
+    darray3E vertexcoords;
+    long int ID;
+    for (const auto & vertex : m_geometry->getVertices()){
+        vertexcoords = vertex.getCoords();
+        ID = vertex.getId();
+        vertexcoords += m_displ[ID];
+        getGeometry()->modifyVertex(vertexcoords, ID);
     }
 
+}
+
+/*!
+ * Check if the filter is related to the target geometry.
+ * If not create a unitary filter field.
+ */
+void
+ScaleGeometry::checkFilter(){
+    if (m_filter.getGeometry() != getGeometry()){
+        m_filter.clear();
+        m_filter.setGeometry(m_geometry);
+        m_filter.setName("M_FILTER");
+        for (const auto & vertex : m_geometry->getVertices()){
+            m_filter.insert(vertex.getId(), 1.0);
+        }
+    }
 }
 
 /*!

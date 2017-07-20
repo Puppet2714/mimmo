@@ -51,6 +51,7 @@ namespace mimmo{
      |                 Port Input  |||                                 |
      |-------|----------|-------------------|-----------------------|
     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | 99    | M_GEOM         | setGeometry         | (SCALAR, MIMMO_)                   |
 
 
      |              Port Output   ||               |                       |
@@ -58,8 +59,8 @@ namespace mimmo{
     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
      | 0     | M_COORDS      | getResult         | (VECARR3, FLOAT)      |
      | 10    | M_DISPLS      | getResult         | (VECARR3, FLOAT)      |
-     | 12    | M_FILTER      | getResult         | (VECTOR, FLOAT)       |
-     | 19    | M_SCALARFIELD | getResult         | (VECTOR, FLOAT)       |
+     | 18    | M_SCALARFIELD | getResult         | (MPVECTOR, FLOAT)     |
+     | 19    | M_VECTORFIELD | getResult         | (MPVECARR3, FLOAT)     |
      | 20    | M_POINT       | getResult         | (ARRAY3, FLOAT)       |
      | 23    | M_SPAN        | getResult         | (ARRAY3, FLOAT)       |
      | 24    | M_DIMENSION   | getResult         | (ARRAY3, INT)         |
@@ -67,8 +68,6 @@ namespace mimmo{
      | 31    | M_VALUEI      | getResult         | (SCALAR, INT)         |
      | 32    | M_VALUEB      | getResult         | (SCALAR, BOOL)        |
      | 40    | M_DEG         | getResult         | (ARRAY3, INT)         |
-     | 50    | M_FILENAME    | getResult         | (SCALAR, STRING)      |
-     | 51    | M_DIR         | getResult         | (SCALAR, STRING)      |
 
  *    =========================================================
  * \n
@@ -81,8 +80,9 @@ namespace mimmo{
  * Proper of the class:
  * - <B>ReadFromFile</B>: 0/1 set class to read from a file;
  * - <B>CSV</B>: 0/1 set class to read a CSV format;
- * - <B>ReadDir</B>: directory path to your current file data;
- * - <B>Filename</B>: name of your current file data.
+ * - <B>ReadDir</B>: path to your current file data;
+ * - <B>Filename</B>: path to your current file data.
+ * - <B>Binary</B>: 0/1 set read a BINARY file (default ASCII);
  *
  */
 class GenericInput: public BaseManipulation{
@@ -94,6 +94,8 @@ private:
 
     std::unique_ptr<IOData>                m_input;        /**<Pointer to a base class object Input, meant for input temporary data, cleanable in execution (derived class is template).*/
     std::unique_ptr<IOData>                m_result;        /**<Pointer to a base class object Result (derived class is template).*/
+
+    bool            m_binary;       /**<Input binary files (used only for MimmoPiercedVector structures).*/
 
 public:
     GenericInput(bool readFromFile = false, bool csv = false);
@@ -125,6 +127,7 @@ public:
     void setCSV(bool csv);
     void setReadDir(std::string dir);
     void setFilename(std::string filename);
+    void setBinary(bool binary);
 
     template<typename T>
     void                 setInput(T* data);
@@ -172,6 +175,12 @@ private:
     std::ifstream&  ifstreamcsv(std::ifstream &in, std::array< T,d > &x);
 
 };
+
+template <>
+dmpvector1D  GenericInput::getResult();
+
+template <>
+dmpvecarr3E  GenericInput::getResult();
 
 REGISTER(BaseManipulation, GenericInput, "mimmo.GenericInput")
 }

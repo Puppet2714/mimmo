@@ -609,11 +609,13 @@ MimmoGeometry::write(){
     }
     break;
 
+
     case FileType::STVTU :
         //Export Triangulation Surface VTU
     {
-        dvecarr3E    points = getGeometry()->getVertexCoords();
-        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        liimap mapDataInv;
+        dvecarr3E    points = getGeometry()->getVertexCoords(&mapDataInv);
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity(mapDataInv);
         shivector1D pids = getGeometry()->getCompactPID();
         bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::TRIANGLE);
         vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
@@ -630,8 +632,9 @@ MimmoGeometry::write(){
     case FileType::SQVTU :
         //Export Quadrilateral Surface VTU
     {
-        dvecarr3E    points = getGeometry()->getVertexCoords();
-        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        liimap mapDataInv;
+        dvecarr3E    points = getGeometry()->getVertexCoords(&mapDataInv);
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity(mapDataInv);
         shivector1D pids = getGeometry()->getCompactPID();
         bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::QUAD);
         vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
@@ -648,8 +651,9 @@ MimmoGeometry::write(){
     case FileType::VTVTU :
         //Export Tetra Volume VTU
     {
-        dvecarr3E    points = getGeometry()->getVertexCoords();
-        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        liimap mapDataInv;
+        dvecarr3E    points = getGeometry()->getVertexCoords(&mapDataInv);
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity(mapDataInv);
         shivector1D pids = getGeometry()->getCompactPID();
         bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::TETRA);
         vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
@@ -666,8 +670,9 @@ MimmoGeometry::write(){
     case FileType::VHVTU :
         //Export Hexa Volume VTU
     {
-        dvecarr3E    points = getGeometry()->getVertexCoords();
-        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        liimap mapDataInv;
+        dvecarr3E    points = getGeometry()->getVertexCoords(&mapDataInv);
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity(mapDataInv);
         shivector1D pids = getGeometry()->getCompactPID();
         bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::HEXAHEDRON);
         vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
@@ -684,8 +689,9 @@ MimmoGeometry::write(){
     case FileType::NAS :
         //Export Nastran file
     {
-        dvecarr3E    points = getGeometry()->getVertexCoords();
-        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        liimap mapDataInv;
+        dvecarr3E    points = getGeometry()->getVertexCoords(&mapDataInv);
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity(mapDataInv);
         NastranInterface nastran;
         nastran.setWFormat(m_wformat);
         shivector1D pids = getGeometry()->getCompactPID();
@@ -732,8 +738,9 @@ MimmoGeometry::write(){
     case FileType::CURVEVTU :
         //Export 3DCurve in VTU
     {
-        dvecarr3E    points = getGeometry()->getVertexCoords();
-        ivector2D    connectivity = getGeometry()->getCompactConnectivity();
+        liimap mapDataInv;
+        dvecarr3E    points = getGeometry()->getVertexCoords(&mapDataInv);
+        ivector2D    connectivity = getGeometry()->getCompactConnectivity(mapDataInv);
         shivector1D pids = getGeometry()->getCompactPID();
         bitpit::VTKUnstructuredGrid  vtk(m_winfo.fdir, m_winfo.fname, bitpit::VTKElementType::LINE);
         vtk.setGeomData( bitpit::VTKUnstructuredField::POINTS, points) ;
@@ -814,7 +821,7 @@ MimmoGeometry::read(){
 
         //count PID if multi-solid
         auto & map = getGeometry()->getPIDTypeList();
-        for(auto & cell : getGeometry()->getCells() ){
+        for(const auto & cell : getGeometry()->getCells() ){
             map.insert(cell.getPID());
         }
     }
@@ -849,10 +856,10 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveVertices(sizeV);
         m_intgeo->getPatch()->reserveCells(sizeC);
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
 
         int ccell = 0;
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -901,8 +908,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
         int ccell = 0;
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -951,8 +958,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
         int ccell = 0;
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -1002,8 +1009,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
         int ccell = 0;
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -1051,8 +1058,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveCells(sizeC);
 
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -1085,7 +1092,7 @@ MimmoGeometry::read(){
         int sizeV = Ipoints.size();
         m_intgeo->getPatch()->reserveVertices(sizeV);
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
 
     }
     break;
@@ -1111,7 +1118,7 @@ MimmoGeometry::read(){
         int sizeV;
         sizeV = Ipoints.size();
         m_intgeo->getPatch()->reserveVertices(sizeV);
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
 
     }
     break;
@@ -1142,8 +1149,8 @@ MimmoGeometry::read(){
         m_intgeo->getPatch()->reserveVertices(sizeV);
         m_intgeo->getPatch()->reserveCells(sizeC);
 
-        for(auto & vv : Ipoints)        m_intgeo->addVertex(vv);
-        for(auto & cc : Iconnectivity)    {
+        for(const auto & vv : Ipoints)        m_intgeo->addVertex(vv);
+        for(const auto & cc : Iconnectivity)    {
             livector1D temp(cc.size());
             int counter = 0;
             for(auto && val : cc){
@@ -1172,6 +1179,7 @@ MimmoGeometry::read(){
             m_intgeo->getPatch()->restore(in);
             buffer.close();
         }
+        return true;
     }
     break;
 
@@ -1331,7 +1339,7 @@ MimmoGeometry::absorbSectionXML(const bitpit::Config::Section & slotXML, std::st
 
     std::string input;
 
-   BaseManipulation::absorbSectionXML(slotXML, name);
+    BaseManipulation::absorbSectionXML(slotXML, name);
 
     if(slotXML.hasOption("IOMode")){
         input = slotXML.get("IOMode");
@@ -1630,8 +1638,7 @@ void NastranInterface::writeCoord(darray3E& p, int& pointI, std::ofstream& os){
     }
     default:
     {
-        cout << "Unknown writeFormat enumeration" << endl;
-        throw std::runtime_error ("Unknown writeFormat enumeration");
+        throw std::runtime_error ("NastranInterface : Unknown writeFormat enumeration");
     }
     }
     os.unsetf(ios_base::right);

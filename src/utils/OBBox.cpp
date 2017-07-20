@@ -376,7 +376,7 @@ OBBox::execute(){
             m_span = span2;
             m_origin = orig;
         }
-    }    
+    }
 
 };
 
@@ -686,7 +686,7 @@ OBBox::adjustBasis(dmatrix33E & eigVec, darray3E & eigVal){
 
     dmatrix33E axes; //, trasp;
     int counter=0;
-    for(auto & val: eigVec){
+    for(const auto & val: eigVec){
         axes[counter] = val;
         ++counter;
     }

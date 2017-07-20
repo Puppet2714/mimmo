@@ -91,12 +91,11 @@ void
 ControlDeformExtSurface::buildPorts(){
     bool built = true;
 
-    built = (built && createPortIn<dvecarr3E, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::setDefField, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT, true));
+    built = (built && createPortIn<dmpvecarr3E, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::setDefField, PortType::M_GDISPLS, mimmo::pin::containerTAG::MPVECARR3, mimmo::pin::dataTAG::FLOAT, true));
     built = (built && createPortIn<MimmoObject*, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::setGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true));
 
     built = (built && createPortOut<double, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolation, PortType::M_VALUED, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<dvector1D, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolationField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<std::pair<BaseManipulation*, double>, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolationPair, PortType::M_VIOLATION, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::PAIRMIMMO_OBJFLOAT_));
+    built = (built && createPortOut<dmpvector1D, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolationField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::MPVECTOR, mimmo::pin::dataTAG::FLOAT));
     m_arePortsBuilt = built;
 };
 
@@ -111,38 +110,11 @@ double
 ControlDeformExtSurface::getViolation(){
 
     double result = -1.0E+18;
-    for(auto & val : m_violationField){
+    for(const auto & val : m_violationField){
         result = std::fmax(result, val);
     }
 
     return    result;
-};
-
-
-/*! 
- *  Return the value of violation of deformed geometry, after class execution. 
- *  A BaseManipulation object pointer, representing the sender of geometry to which violation is referred, 
- *  is attached to violation value; 
- *  See getViolation method doc for further details. 
- * \return std::pair structure reporting geometry sender pointer and violation value.
- */
-std::pair<BaseManipulation*, double> 
-ControlDeformExtSurface::getViolationPair(){
-
-    //get map of Input ports of the class.
-    std::map<short int, mimmo::PortIn*> mapPorts = getPortsIn();
-
-    //get class who send geometry here - portID = 99 -> M_GEOM
-
-    std::vector<BaseManipulation*> senders = mapPorts[99]->getLink();
-
-    std::string etiq;
-    if(senders.size() == 0){
-        return    std::make_pair(this, getViolation());
-    }else{
-        return    std::make_pair(senders[0], getViolation());
-    }
-
 };
 
 /*! 
@@ -152,7 +124,7 @@ ControlDeformExtSurface::getViolationPair(){
  *  delimited by the plane (where plane normal pointing), true the exact opposite.
  * \return violation field values
  */
-dvector1D 
+dmpvector1D
 ControlDeformExtSurface::getViolationField(){
     return(m_violationField);
 };
@@ -186,11 +158,10 @@ ControlDeformExtSurface::getBackgroundDetails(){
  * \param[in]    field of deformation
  */
 void
-ControlDeformExtSurface::setDefField(dvecarr3E field){
+ControlDeformExtSurface::setDefField(dmpvecarr3E field){
     m_defField.clear();
     m_violationField.clear();
     m_defField = field;
-    m_violationField.resize(field.size(),-1.E+18);
 };
 
 /*!
@@ -306,11 +277,16 @@ void
 ControlDeformExtSurface::execute(){
 
     MimmoObject * geo = getGeometry();
-    if(geo->isEmpty()) return;
+    if(geo->isEmpty() || m_defField.getGeometry() != geo) return;
 
     int nDFS = m_defField.size();
-    m_defField.resize(geo->getNVertex(),darray3E{{0.0,0.0,0.0}});
-    m_violationField.resize(nDFS,-1.E+18);
+    m_violationField.clear();
+
+    long int ID;
+    for (const auto & v : geo->getVertices()){
+        ID = v.getId();
+        m_violationField.insert(ID, -1.0e+18);
+    }
 
     dvector1D violationField;
     violationField.resize(nDFS);
@@ -322,17 +298,23 @@ ControlDeformExtSurface::execute(){
     darray3E geoBary = {{0.0,0.0,0.0}};
     double distBary = 0.0;
 
-    for(auto & p: points)    geoBary += p;
+    for(const auto & p: points)    geoBary += p;
 
     geoBary /= (double)geo->getNVertex();
 
-    for(auto & p: points){
+    for(const auto & p: points){
         distBary= std::fmax(distBary,norm2(p-geoBary));
     }
     //***************************************************************
 
     //adding deformation to points **********************************
-    points+= m_defField;
+    int count = 0;
+    for (const auto & v : geo->getVertices()){
+        ID = v.getId();
+        points[count] +=m_defField[ID];
+        ++count;
+    }
+
     //***************************************************************
 
     //read external surfaces*****************************************
@@ -348,7 +330,7 @@ ControlDeformExtSurface::execute(){
     darray3E bbMin, bbMax;
     {
         int count2 = 0;
-        for(auto & p : points){
+        for(const auto & p : points){
             if(count2 == 0)    {
                 bbMinDef = p;
                 bbMaxDef = p;
@@ -361,7 +343,7 @@ ControlDeformExtSurface::execute(){
             count2++;
         }
         count2=0;
-        for(auto & p : pointsOR){
+        for(const auto & p : pointsOR){
             for(int i=0; i<3; ++i ){
                 bbMinDef[i] = std::fmin(bbMinDef[i], p[i]);
                 bbMaxDef[i] = std::fmax(bbMaxDef[i], p[i]);
@@ -372,7 +354,7 @@ ControlDeformExtSurface::execute(){
     //***************************************************************
     int counterExtGeo =0;
     // start examining all external geometries***********************
-    for(auto &gg : extgeo){
+    for(const auto &gg : extgeo){
 
         //check constraints properties ******************************
         MimmoObject * local = gg->getGeometry();
@@ -390,7 +372,7 @@ ControlDeformExtSurface::execute(){
         bbMin = bbMinDef;
         bbMax = bbMaxDef;
 
-        for(auto & p : local->getVertexCoords()){
+        for(const auto & p : local->getVertexCoords()){
             for(int i=0; i<3; ++i ){
                 bbMin[i] = std::fmin(bbMin[i], p[i]);
                 bbMax[i] = std::fmax(bbMax[i], p[i]);
@@ -464,7 +446,7 @@ ControlDeformExtSurface::execute(){
             //calculate distance on point of background grid.
             dvecarr3E background_points(mesh->getVertexCount());
             int count = 0;
-            for(auto & v: mesh->getVertices()){
+            for(const auto & v: mesh->getVertices()){
                 background_points[count] = v.getCoords();
                 count++;
             }
@@ -527,11 +509,19 @@ ControlDeformExtSurface::execute(){
             mesh = NULL;
         }//end if else
 
-        for(int i=0; i< nDFS; ++i){
-            m_violationField[i] = std::fmax(m_violationField[i], (violationField[i] + tols[counterExtGeo]));
+        int ii = 0;
+        for(auto & val : m_violationField){
+            val = std::fmax(val, (violationField[ii] + tols[counterExtGeo]));
+            ++ii;
         }
         ++counterExtGeo;
     }
+
+    m_violationField.setGeometry(getGeometry());
+    m_violationField.setName("violation");
+
+    writeLog();
+
 };
 
 /*!
@@ -742,10 +732,16 @@ void
 ControlDeformExtSurface::plotOptionalResults(){
     if(getGeometry()->isEmpty())    return;
 
-    dvecarr3E  points = getGeometry()->getVertexCoords();
-    m_defField.resize(points.size());
-    points+=m_defField;
-    ivector2D connectivity = getGeometry()->getCompactConnectivity();
+    liimap map;
+    dvecarr3E  points = getGeometry()->getVertexCoords(&map);
+    dvecarr3E deff(m_defField.size());
+    int count = 0;
+    for (const auto & f : m_defField){
+        deff[count] = f;
+        ++count;
+    }
+    points+=deff;
+    ivector2D connectivity = getGeometry()->getCompactConnectivity(map);
 
     bitpit::VTKElementType  elDM = bitpit::VTKElementType::TRIANGLE;
 
@@ -756,10 +752,36 @@ ControlDeformExtSurface::plotOptionalResults(){
     output.setDimensions(connectivity.size(), points.size());
 
 
-    m_violationField.resize(points.size(), -1.e+18);
+    dvector1D viol(m_violationField.size());
+    count = 0;
+    for (const auto & f : m_violationField){
+        viol[count] = f;
+        ++count;
+    }
     std::string sdfstr = "Violation Distance Field";
-    output.addData(sdfstr, bitpit::VTKFieldType::SCALAR, bitpit::VTKLocation::POINT, m_violationField);
+    output.addData(sdfstr, bitpit::VTKFieldType::SCALAR, bitpit::VTKLocation::POINT, viol);
     output.write();
 }
+
+/*!
+ * Write log file
+ */
+void
+ControlDeformExtSurface::writeLog(){
+
+    std::string logname = m_name+"_violation";
+    bitpit::Logger* log = &bitpit::log::cout(logname);
+    log->setPriority(bitpit::log::DEBUG);
+
+    (*log)<<" violation value : " << getViolation() << std::endl;
+
+    (*log)<<" constraint geometries files : " ;
+    for (auto ig : m_geolist){
+        (*log)<< ig.first << "  " ;
+    }
+    (*log)<<endl;
+
+
+};
 
 }

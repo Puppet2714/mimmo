@@ -38,6 +38,7 @@ GenericOutput::GenericOutput(std::string dir, std::string filename, bool csv){
     m_csv       = csv;
     m_portsType    = ConnectionType::BACKWARD;
     m_name         = "mimmo.GenericOutput";
+    m_binary        = false;
 };
 
 /*!
@@ -51,6 +52,7 @@ GenericOutput::GenericOutput(const bitpit::Config::Section & rootXML){
     m_portsType    = ConnectionType::BACKWARD;
     m_name         = "mimmo.GenericOutput";
     m_csv       = false;
+    m_binary        = false;
 
     std::string fallback_name = "ClassNONE";
     std::string input = rootXML.get("ClassName", fallback_name);
@@ -76,6 +78,7 @@ GenericOutput::GenericOutput(const GenericOutput & other):BaseManipulation(other
     m_dir           = other.m_dir;
     m_filename      = other.m_filename;
     m_csv           = other.m_csv;
+    m_binary        = other.m_binary;
 };
 
 /*!
@@ -86,6 +89,7 @@ GenericOutput & GenericOutput::operator=(const GenericOutput & other){
     m_dir           = other.m_dir;
     m_filename         = other.m_filename;
     m_csv           = other.m_csv;
+    m_binary        = other.m_binary;
     return *this;
 };
 
@@ -97,17 +101,15 @@ GenericOutput::buildPorts(){
     bool built = true;
     built = (built && createPortIn<dvecarr3E, GenericOutput>(this, &mimmo::GenericOutput::setInput<dvecarr3E>, PortType::M_COORDS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<dvecarr3E, GenericOutput>(this, &mimmo::GenericOutput::setInput<dvecarr3E>, PortType::M_DISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<dvector1D, GenericOutput>(this, &mimmo::GenericOutput::setInput<dvector1D>, PortType::M_FILTER, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
+    built = (built && createPortIn<dvector1D, GenericOutput>(this, &mimmo::GenericOutput::setInput<dvector1D>, PortType::M_DATAFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<darray3E, GenericOutput>(this, &mimmo::GenericOutput::setInput<darray3E>, PortType::M_POINT, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<iarray3E, GenericOutput>(this, &mimmo::GenericOutput::setInput<iarray3E>, PortType::M_DIMENSION, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::INT));
     built = (built && createPortIn<double, GenericOutput>(this, &mimmo::GenericOutput::setInput<double>, PortType::M_VALUED, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<int, GenericOutput>(this, &mimmo::GenericOutput::setInput<int>, PortType::M_VALUEI, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::INT));
     built = (built && createPortIn<bool, GenericOutput>(this, &mimmo::GenericOutput::setInput<bool>, PortType::M_VALUEB, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::BOOL));
     built = (built && createPortIn<iarray3E, GenericOutput>(this, &mimmo::GenericOutput::setInput<iarray3E>, PortType::M_DEG, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::INT));
-    built = (built && createPortIn<string, GenericOutput>(this, &mimmo::GenericOutput::setInput<string>, PortType::M_FILENAME, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::STRING));
-    built = (built && createPortIn<string, GenericOutput>(this, &mimmo::GenericOutput::setInput<string>, PortType::M_DIR, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::STRING));
-    //     built = (built && createPortIn<string*, GenericOutput>(this, &mimmo::GenericOutput::setInput<string*>, PortType::M_FILENAMEPTR, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::STRING_));
-    //     built = (built && createPortIn<string*, GenericOutput>(this, &mimmo::GenericOutput::setInput<string*>, PortType::M_DIRPTR, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::STRING_));
+    built = (built && createPortIn<dmpvector1D, GenericOutput>(this, &mimmo::GenericOutput::setResult<dmpvector1D>, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::MPVECTOR, mimmo::pin::dataTAG::FLOAT));
+    built = (built && createPortIn<dmpvecarr3E, GenericOutput>(this, &mimmo::GenericOutput::setResult<dmpvecarr3E>, PortType::M_VECTORFIELD, mimmo::pin::containerTAG::MPVECARR3, mimmo::pin::dataTAG::FLOAT));
 
     m_arePortsBuilt = built;
 }
@@ -138,6 +140,15 @@ void
 GenericOutput::setCSV(bool csv){
     m_csv = csv;
 };
+
+/*!It sets if the output file is in Binary format.
+ * \param[in] binary Is the output file in Binary format?
+ */
+void
+GenericOutput::setBinary(bool binary){
+    m_binary = binary;
+};
+
 
 /*!
  * It clear the input member of the object
@@ -221,5 +232,56 @@ GenericOutput::flushSectionXML(bitpit::Config::Section & slotXML, std::string na
     slotXML.set("WriteDir", m_dir);
     slotXML.set("CSV", std::to_string((int)m_csv));
 };
+
+
+//specializations of setResult
+
+/*!
+ * Overloaded function of base class setInput.
+ * It sets the input/result and write on file at the same time.
+ * \param[in] data Data to be written and to be used to set the input/result.
+ */
+template<>
+void
+GenericOutput::setResult(dmpvector1D data){
+    _setInput(data);
+    _setResult(data);
+    std::fstream file;
+    file.open(m_dir+"/"+m_filename);
+    bitpit::PiercedVector<double> pvdata = static_cast<dmpvector1D>(data);
+    if (file.is_open()){
+        if (m_binary){
+            bitpit::genericIO::flushBINARY(file, pvdata, true);
+        }
+        else{
+            bitpit::genericIO::flushASCII(file, 1, pvdata, true);
+        }
+        file.close();
+    }
+}
+
+/*!
+ * Overloaded function of base class setInput.
+ * It sets the input/result and write on file at the same time.
+ * \param[in] data Data to be written and to be used to set the input/result.
+ */
+template<>
+void
+GenericOutput::setResult(dmpvecarr3E data){
+    _setInput(data);
+    _setResult(data);
+    std::fstream file;
+    file.open(m_dir+"/"+m_filename);
+    bitpit::PiercedVector<array<double, 3> > pvdata = static_cast<dmpvecarr3E>(data);
+    if (file.is_open()){
+        if (m_binary){
+            bitpit::genericIO::flushBINARY(file, pvdata, true);
+        }
+        else{
+            bitpit::genericIO::flushASCII(file, 3, pvdata, true);
+        }
+        file.close();
+    }
+}
 
 }

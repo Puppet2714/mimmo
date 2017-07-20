@@ -108,11 +108,11 @@ IOOFOAM::buildPorts(){
     bool built = true;
     built = (built && createPortIn<MimmoObject*, IOOFOAM>(this, &IOOFOAM::setGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
     built = (built && createPortIn<MimmoObject*, IOOFOAM>(this, &IOOFOAM::setSurfaceBoundary, PortType::M_GEOM2, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortIn<dvector1D, IOOFOAM>(this, &IOOFOAM::setField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
+    built = (built && createPortIn<dmpvector1D, IOOFOAM>(this, &IOOFOAM::setField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::MPVECTOR, mimmo::pin::dataTAG::FLOAT));
 
     built = (built && createPortOut<MimmoObject*, IOOFOAM>(this, &IOOFOAM::getGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
     built = (built && createPortOut<MimmoObject*, IOOFOAM>(this, &IOOFOAM::getSurfaceBoundary, PortType::M_GEOM2, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortOut<dvector1D, IOOFOAM>(this, &IOOFOAM::getField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
+    built = (built && createPortOut<dmpvector1D, IOOFOAM>(this, &IOOFOAM::getField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::MPVECTOR, mimmo::pin::dataTAG::FLOAT));
     m_arePortsBuilt = built;
 };
 
@@ -256,7 +256,7 @@ IOOFOAM::setScaling(double scaling){
  * \param[in] field Scalar field.
  */
 void
-IOOFOAM::setField(dvector1D field){
+IOOFOAM::setField(dmpvector1D field){
     m_field = field;
 }
 
@@ -296,7 +296,7 @@ IOOFOAM::getGeometry(){
  * related to surface boundary mesh.
  * \return Scalar field.
  */
-dvector1D
+dmpvector1D
 IOOFOAM::getField(){
     return (m_field);
 }
@@ -330,7 +330,7 @@ IOOFOAM::read(){
         patchVol->getPatch()->reserveVertices(sizeV);
 
         //  Stock vertices in volume grid
-        for(auto & vv : Ipoints)    patchVol->addVertex(vv);
+        for(const auto & vv : Ipoints)    patchVol->addVertex(vv);
 
         //release the points cloud mesh
         m_volmesh = std::move(patchVol);
@@ -354,14 +354,14 @@ IOOFOAM::read(){
     }
     auto convMap = patchBnd->getMapDataInv();
     if (m_normalize && m_maxf > 0.0){
-        for (auto vertex : patchBnd->getVertices()){
-            m_field[convMap[vertex.getId()]] /= m_maxf;
-            m_field[convMap[vertex.getId()]] *= m_scaling;
+        for (const auto & vertex : patchBnd->getVertices()){
+            m_field[vertex.getId()] /= m_maxf;
+            m_field[vertex.getId()] *= m_scaling;
         }
     }
     else{
-        for (auto vertex : patchBnd->getVertices()){
-            m_field[convMap[vertex.getId()]] *= m_scaling;
+        for (const auto & vertex : patchBnd->getVertices()){
+            m_field[vertex.getId()] *= m_scaling;
         }
     }
 
@@ -498,7 +498,7 @@ void IOOFOAM::writeOFP(string& outputDir, string& pointsName, PiercedVector<Vert
     int np = vertices.size();
     os << np << nl;
     os << parl << nl;
-    for (auto vertex : vertices){
+    for (const auto & vertex : vertices){
         os << parl;
         for (int j=0; j<2; j++){
             os << setprecision(16) << vertex[j] << separator;
@@ -543,7 +543,6 @@ bool IOOFOAM::readVTK(string& inputDir, string& surfaceName, short PID, MimmoObj
 
     //mapper for connectivity
     map<vtkIdType, long> mapID;
-    map<vtkIdType, long> mapid;
 
     // Get all data from the file
     vtkSmartPointer<vtkGenericDataObjectReader> reader =
@@ -600,7 +599,6 @@ bool IOOFOAM::readVTK(string& inputDir, string& surfaceName, short PID, MimmoObj
                 patchBnd->addVertex(point, ID);
             }
             mapID[id] = ID;
-            mapid[id] = patchBnd->getMapDataInv(ID);
         }
 
         vtkIdType* conn_;
@@ -621,16 +619,16 @@ bool IOOFOAM::readVTK(string& inputDir, string& surfaceName, short PID, MimmoObj
         //IOOFOAM reads only a scalar field on each patch if present (if not add 0 values)
         //If m_normalize is active the data are normalized with the maximum value on the patches
         vtkDataArray* data = pdata->GetArray(0);
-        m_field.resize(patchBnd->getNVertex());
+        m_field.clear();
         if (data != NULL){
             for (vtkIdType id=0; id<points->GetNumberOfPoints(); id++){
-                m_field[mapid[id]] = (data->GetComponent(id,0));
-                m_maxf = max(m_maxf, abs(m_field[mapid[id]]));
+                m_field.insert(id, data->GetComponent(id,0));
+                m_maxf = max(m_maxf, abs(m_field[id]));
             }
         }
         else{
             for (vtkIdType id=0; id<points->GetNumberOfPoints(); id++){
-                m_field[mapid[id]] = 0.0;
+                m_field.insert(id, 0.0);
             }
         }
     }
@@ -639,6 +637,8 @@ bool IOOFOAM::readVTK(string& inputDir, string& surfaceName, short PID, MimmoObj
         m_stopat = PID;
         return false;
     }
+
+    m_field.setGeometry(patchBnd);
 
     return true;
 }

@@ -302,7 +302,8 @@ GenericSelection::plotOptionalResults(){
     if(getPatch() == NULL) return;
     if(getPatch()->isEmpty()) return;
 
-    dvecarr3E points = getPatch()->getVertexCoords();
+    liimap mapDataInv;
+    dvecarr3E points = getPatch()->getVertexCoords(&mapDataInv);
     ivector2D connectivity;
     bitpit::VTKElementType cellType;
 
@@ -311,7 +312,7 @@ GenericSelection::plotOptionalResults(){
 
 
     if (getPatch()->getType() != 3){
-        connectivity = getPatch()->getCompactConnectivity();
+        connectivity = getPatch()->getCompactConnectivity(mapDataInv);
     }
     else{
         int np = points.size();

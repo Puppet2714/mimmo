@@ -808,6 +808,112 @@ bitpit::OBinaryStream& operator<<(bitpit::OBinaryStream &buffer, const std::vect
     return buffer;
 };
 
+/*!
+* Input stream operator for bitpit::PiercedVector\< double \>
+* \param[in] buffer is the input stream
+* \param[in] element is the element to be streamed
+* \result Returns the same output stream received in input.
+*/
+bitpit::IBinaryStream& operator>>(bitpit::IBinaryStream &buffer, mimmo::dmpvector1D& element){
+
+    element.clear();
+    mimmo::MimmoObject* geo;
+    buffer >> geo;
+    element.setGeometry(geo);
+    std::string name;
+    buffer >> name;
+    element.setName(name);
+    int nP;
+    buffer >> nP;
+    double val;
+    long int Id;
+    for (int i = 0; i < nP; ++i) {
+        buffer >> Id;
+        buffer >> val;
+        element.insert(Id, val);
+    }
+    return buffer;
+};
+
+/*!
+* Output stream operator for bitpit::PiercedVector\< double \>
+* \param[in] buffer is the output stream
+* \param[in] element is the element to be streamed
+* \result Returns the same output stream received in input.
+*/
+bitpit::OBinaryStream& operator<<(bitpit::OBinaryStream &buffer, const mimmo::dmpvector1D& element){
+
+    mimmo::MimmoObject* geo = element.getGeometry();
+    buffer << geo;
+    std::string name = element.getName();
+    buffer << name;
+    int nP = element.size();
+    std::vector<long int> Ids = element.getIds();
+    buffer << nP;
+    long int Id;
+    for (int i=0; i<nP; ++i){
+        Id = Ids[i];
+        buffer << Id;
+        buffer << element[Id];
+    }
+    return buffer;
+};
+
+/*!
+    Output stream operator for dmpvecarr3E
+    \param[in] buffer is the output stream
+    \param[in] var is the element to be streamed
+    \result Returns the same output stream received in input.
+*/
+bitpit::OBinaryStream& operator<<(bitpit::OBinaryStream  &buffer, const mimmo::dmpvecarr3E &element)
+{
+    mimmo::MimmoObject* geo = element.getGeometry();
+    buffer << geo;
+    std::string name = element.getName();
+    buffer << name;
+    std::vector<long int> Ids = element.getIds();
+    int nP = Ids.size();
+    buffer << nP;
+    long int Id;
+    for (int i = 0; i < nP; ++i) {
+        Id = Ids[i];
+        buffer << Id;
+        for (int j = 0; j < 3; ++j) {
+            buffer << element[Id][j];
+        }
+    }
+    return buffer;
+}
+
+/*!
+    Input stream operator for dmpvecarr3E
+    \param[in] buffer is the input stream
+    \param[in] var is the element to be streamed
+    \result Returns the same input stream received in input.
+*/
+bitpit::IBinaryStream& operator>>(bitpit::IBinaryStream &buffer, mimmo::dmpvecarr3E &element)
+{
+    element.clear();
+    mimmo::MimmoObject* geo;
+    buffer >> geo;
+    element.setGeometry(geo);
+    std::string name;
+    buffer >> name;
+    element.setName(name);
+    int nP;
+    buffer >> nP;
+    darray3E val;
+    long int Id;
+    for (int i = 0; i < nP; ++i) {
+        buffer >> Id;
+        for (int j = 0; j < 3; ++j) {
+            buffer >> val[j];
+        }
+        element.insert(Id, val);
+    }
+    return buffer;
+}
+
 //==============================================================//
 // DATA TYPE  CLASS	IMPLEMENTATION								//
 //==============================================================//

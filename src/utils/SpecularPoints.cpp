@@ -95,7 +95,7 @@ SpecularPoints::buildPorts(){
 
     built = (built && createPortIn<dvecarr3E, SpecularPoints>(this,&mimmo::SpecularPoints::setCoords, PortType::M_COORDS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<dvecarr3E, SpecularPoints>(this, &mimmo::SpecularPoints::setVectorData, PortType::M_DISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<dvector1D, SpecularPoints>(this, &mimmo::SpecularPoints::setScalarData, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
+    built = (built && createPortIn<dvector1D, SpecularPoints>(this, &mimmo::SpecularPoints::setScalarData, PortType::M_DATAFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<darray4E, SpecularPoints>(this, &mimmo::SpecularPoints::setPlane, PortType::M_PLANE, mimmo::pin::containerTAG::ARRAY4, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<darray3E, SpecularPoints>(this, &mimmo::SpecularPoints::setOrigin, PortType::M_POINT, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortIn<darray3E, SpecularPoints>(this, &mimmo::SpecularPoints::setNormal, PortType::M_AXIS, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
@@ -105,7 +105,7 @@ SpecularPoints::buildPorts(){
 
     built = (built && createPortOut<dvecarr3E, SpecularPoints>(this, &mimmo::SpecularPoints::getCloudResult, PortType::M_COORDS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
     built = (built && createPortOut<dvecarr3E, SpecularPoints>(this, &mimmo::SpecularPoints::getCloudVectorData, PortType::M_DISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<dvector1D, SpecularPoints>(this, &mimmo::SpecularPoints::getCloudScalarData, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
+    built = (built && createPortOut<dvector1D, SpecularPoints>(this, &mimmo::SpecularPoints::getCloudScalarData, PortType::M_DATAFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
     m_arePortsBuilt = built;
 };
 
@@ -291,7 +291,7 @@ SpecularPoints::execute(){
         double aTot = 0.0;
         int cellSize = getGeometry()->getNCells();
         bitpit::SurfaceKernel * tri = static_cast<bitpit::SurfaceKernel * >(getGeometry()->getPatch());
-        for(auto &cell: tri->getCells()){
+        for(const auto &cell: tri->getCells()){
             aTot += tri->evalCellArea(cell.getId());
         }
 
@@ -301,7 +301,7 @@ SpecularPoints::execute(){
         double vTot = 0.0;
         int cellSize = getGeometry()->getNCells();
         bitpit::VolumeKernel * tetra = static_cast<bitpit::VolumeKernel * >(getGeometry()->getPatch());
-        for(auto &cell: tetra->getCells()){
+        for(const auto &cell: tetra->getCells()){
             vTot += tetra->evalCellVolume(cell.getId());
         }
 
@@ -327,7 +327,7 @@ SpecularPoints::execute(){
     m_scalarMirrored.resize(2*counterProj);
     m_vectorMirrored.resize(2*counterProj);
 
-    for(auto &val: m_points){
+    for(const auto &val: m_points){
         distance = sig*(dotProduct(norm, val) + offset);
         if(distance > margin || m_force){
             m_proj[counterProj] = val - 2.0*distance*sig*norm;

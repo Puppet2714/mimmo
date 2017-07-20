@@ -33,10 +33,13 @@ BETTER_ENUM(PortType, int,
             M_LOCAL 			= 2,
             M_DISPLS 			= 10,
             M_GDISPLS 			= 11,
-            M_FILTER			= 12,
-            M_VECTORSI			= 17,
-            M_VECTORLI			= 18,
-            M_SCALARFIELD		= 19,
+            M_FILTER            = 12,
+            M_FILTER_           = 13,
+            M_DATAFIELD         = 14,
+            M_VECTORSI			= 16,
+            M_VECTORLI			= 17,
+            M_SCALARFIELD       = 18,
+            M_VECTORFIELD       = 19,
             M_POINT				= 20,
             M_AXIS				= 21,
             M_AXES				= 22,
@@ -58,23 +61,12 @@ BETTER_ENUM(PortType, int,
             M_BOOLS3			= 42,
             M_NURBSCOORDTYPE	= 43,
             M_NURBSWEIGHTS 		= 44,
-            M_FILENAME			= 50,
-            M_DIR				= 51,
-            M_FILENAMEPTR		= 52,
-            M_DIRPTR			= 53,
-            M_PAIRVECFIELD 		= 80,
-            M_PAIRSCAFIELD 		= 81,
-            M_VIOLATION			= 82,
+            M_VECSFIELDS        = 60,
+            M_VECVFIELDS        = 61,
             M_GEOM2				= 98,
             M_GEOM 				= 99,
-            M_VECGEOM			= 100,
-            M_MAPGEOM           = 101,
             M_FINFO				= 102,
             M_FINFO2			= 103,
-            M_MAPDCELL			= 104,
-            M_MAPDVERT			= 105,
-            M_UMGEOSFD			= 106,
-            M_UMGEOVFD          = 107,
             M_BCCGNS            = 108,
             M_POINT2			= 120,
             M_VALUED2			= 130,
@@ -84,8 +76,6 @@ BETTER_ENUM(PortType, int,
             M_VALUEB4			= 142,
             M_VALUEB5			= 143,
             M_VALUEI2			= 150,
-            M_VECPAIRSF			= 200,
-            M_VECPAIRVF			= 201,
             M_POLYDATA_         = 1100
         );
 
@@ -93,6 +83,9 @@ BETTER_ENUM(PortType, int,
 namespace mimmo{
 
 class BaseManipulation;
+
+template<typename value_t, typename id_t>
+class MimmoPiercedVector;
 
 /*!
  * \class FileDataInfo
@@ -138,11 +131,14 @@ struct FileDataInfo{
 * - <B>M_GLOBAL        </B>= 1    Port dedicated to communicate coordinates of points in a global reference system [vector<array<double,3>>].,
 * - <B>M_LOCAL         </B>= 2    Port dedicated to communicate coordinates of points in a local reference system. [vector<array<double,3>>].,
 * - <B>M_DISPLS        </B>= 10   Port dedicated to communicate displacements of points [vector<array<double,3>>].,
-* - <B>M_GDISPLS       </B>= 11   Port dedicated to communicate displacements of geometry vertex [vector<array<double,3>>].,
-* - <B>M_FILTER        </B>= 12   Port dedicated to communicate a scalar field used as filter function [vector<double>].,
-* - <B>M_VECTORSI      </B>= 17   Port dedicated to communicate a generic list of short integers [vector<short int>].,
-* - <B>M_VECTORLI      </B>= 18   Port dedicated to communicate a generic list of long integers [vector<long int>].,
-* - <B>M_SCALARFIELD   </B>= 19   Port dedicated to communicate a generic scalar field [vector<double>].,
+* - <B>M_GDISPLS       </B>= 11   Port dedicated to communicate displacements (or a generic field of array<double,3>) of geometry vertex [MimmoPiercedVector<array<double,3>>].,
+* - <B>M_FILTER        </B>= 12   Port dedicated to communicate a scalar field used as filter function [MimmoPiercedVector<double>].,
+* - <B>M_FILTER_       </B>= 13   Port dedicated to communicate a pointer to a scalar field used as filter function [MimmoPiercedVector<double>*].,
+* - <B>M_DATAFIELD     </B>= 14   Port dedicated to communicate a generic scalar field [std::vector<double>].,
+* - <B>M_VECTORSI      </B>= 16   Port dedicated to communicate a generic list of short integers [vector<short int>].,
+* - <B>M_VECTORLI      </B>= 17   Port dedicated to communicate a generic list of long integers [vector<long int>].,
+* - <B>M_SCALARFIELD   </B>= 18   Port dedicated to communicate a generic scalar field [MimmoPiercedVector<double>].,
+* - <B>M_VECTORFIELD   </B>= 19   Port dedicated to communicate a generic vector field [MimmoPiercedVector<array<double,3>>].,
 * - <B>M_POINT         </B>= 20   Port dedicated to communicate the coordinate of a point field [array<double,3>].,
 * - <B>M_AXIS          </B>= 21   Port dedicated to communicate the direction of an axis [array<double,3>].,
 * - <B>M_AXES          </B>= 22   Port dedicated to communicate a reference system [array<array<double,3>,3>].,
@@ -164,21 +160,13 @@ struct FileDataInfo{
 * - <B>M_BOOLS3        </B>= 42   Port dedicated to communicate a set of conditions [array<bool,3>].,
 * - <B>M_NURBSCOORDTYPE</B>= 43   Port dedicated to communicate condition to design NURBS on FFDLattice [array<mimmo::CoordType,3>] .,
 * - <B>M_NURBSWEIGHTS  </B>= 44   Port dedicated to communicate condition to exchange NURBS weights on FFDLattice [vector<double>],
-* - <B>M_FILENAME      </B>= 50   Port dedicated to communicate a filename [string].,
-* - <B>M_DIR           </B>= 51   Port dedicated to communicate a directory path [string].,
-* - <B>M_PAIRVECFIELD  </B>= 80   Port dedicated to communicate a vector field on a MimmoObject geometry as std::pair<MimmoObject *, vector<array<double,3>>> ,
-* - <B>M_PAIRSCAFIELD  </B>= 81   Port dedicated to communicate a scalar field on a MimmoObject geometry as std::pair<MimmoObject *, vector<double>> ,
+* - <B>M_VECSFIELDS    </B>= 60   Port dedicated to communicate a vector of scalar fields [vector<mimm::MimmoPiercedVector<double>].,
+* - <B>M_VECVFIELDS    </B>= 61   Port dedicated to communicate a vector of vector (displacements) fields related to a geometry [vector<mimm::MimmoPiercedVector<double>].,
 * - <B>M_VIOLATION     </B>= 82   Port dedicated to communicate a double value, with a BaseManipulation object which refers to as std::pair<BaseManipulation *, double>,
 * - <B>M_GEOM2         </B>= 98   Port dedicated to communicate a pointer to a geometry [MimmoObject *],
 * - <B>M_GEOM          </B>= 99   Port dedicated to communicate a pointer to a geometry [MimmoObject *],
-* - <B>M_VECGEOM       </B>= 100  Port dedicated to communicate a list of pointers to geometries std::vector<MimmoObject *>,
-* - <B>M_MAPGEOM       </B>= 101  Port dedicated to communicate a cells map list of the type std::unordered_map<long, short>,
 * - <B>M_FINFO         </B>= 102  Port dedicated to communicate a list of FileInfoData classes std::vector<FileInfoData>,
 * - <B>M_FINFO2        </B>= 103  Port dedicated to communicate a list of FileInfoData classes std::vector<FileInfoData>.,	 
-* - <B>M_MAPDCELL      </B>= 104  Port dedicated to communicate a map of cell-ids of type <long, std::pair<int, long>>,
-* - <B>M_MAPDVERT      </B>= 105  Port dedicated to communicate a map of vertex-ids of type <long, std::pair<int, long>>,
-* - <B>M_UMGEOSFD      </B>= 106  Port dedicated to communicate a map of MimmoObject* and dvector1D*,
-* - <B>M_UMGEOVFD      </B>= 107  Port dedicated to communicate a map of MimmoObject* and dvecarr3E*,
 * - <B>M_BCCGNS        </B>= 108  Port dedicated to communicate a pointer to a BCCGNS object (Boundary Conditions Info for CGNS export),
 * - <B>M_POINT2        </B>= 120  Port dedicated to communicate the coordinate of a point field [array<double,3>].,
 * - <B>M_VALUED2       </B>= 130  Port dedicated to communicate a scalar value [double].,
@@ -187,8 +175,6 @@ struct FileDataInfo{
 * - <B>M_VALUEB4       </B>= 142  Port dedicated to communicate a scalar value [bool].,
 * - <B>M_VALUEB5       </B>= 143  Port dedicated to communicate a scalar value [bool].,
 * - <B>M_VALUEI2       </B>= 150  Port dedicated to communicate a scalar value [int].,
-* - <B>M_VECPAIRSF     </B>= 200  Port dedicated to communicate a std::vector<std::pair<MimmoObject*, dvector1D*> >.,
-* - <B>M_VECPAIRVF     </B>= 201  Port dedicated to communicate a std::vector<std::pair<MimmoObject*, dvecarr3E*> >.,
 * - <B>M_POLYDATA_     </B>= 1100 Port dedicated to communicate a pointer to a vtk polydata mesh [vtkPolyData *].
 */
 namespace pin{
@@ -223,14 +209,14 @@ enum class containerTAG{
     ARRAY3			/**< TAG related to std::array< . , 3 > container.*/,
     ARRAY4			/**< TAG related to std::array< . , 4 > container.*/,
     VECVEC			/**< TAG related to std::vector< std::vector< . > > container.*/,
-    VECARR3			/**< TAG related to std::vector< std::array< . , 3 > > container.*/,
+    VECARR3         /**< TAG related to std::vector< std::array< . , 3 > > container.*/,
     VECARR2			/**< TAG related to std::vector< std::array< . , 2 > > container */,	
     VECVECARR2		/**< TAG related to std::vector< std::vector< std::array< . , 2 > > > container */,	
     ARR3ARR3		/**< TAG related to std::array< std::array< . , 3 > , 3 > container.*/,
     ARR3ARR3VEC		/**< TAG related to std::array< std::array< std::array< . , 3 > , 3 > , 3 > container.*/,
     MAP				/**< TAG related to std::map< . , . > container.*/,
-    UN_MAP			/**< TAG related to std::unordered_map< . , . > container.*/,
-    PAIR			/**< TAG related to std::pair< . , . > container.*/
+    MPVECTOR        /**< TAG related to mimmo::MimmoPiercedVector< . > container.*/,
+    MPVECARR3       /**< TAG related to mimmo::MimmoPiercedVector< std::array< . , 3 > > container.*/
 
 };
 
@@ -254,14 +240,10 @@ enum class dataTAG{
     BOOL						/**< TAG related to a bool data.*/,
     STRING						/**< TAG related to a string data.*/,
     STRING_						/**< TAG related to a string pointer data.*/,
-    MIMMO_VECFLOAT_				/**< TAG related to a couple (normally used in pair container) of mimmo::MimmoObject* and std::vector<double>* data.*/,
-    MIMMO_VECARR3FLOAT_			/**< TAG related to a couple (normally used in pair container) of mimmo::MimmoObject* and std::vector<std::array<double,3> >* data.*/,
+    MPVECFLOAT                  /**< TAG related to a std::vector of bitpit::PiercedVector<double> data.*/,
+    MPVECARR3FLOAT              /**< TAG related to a std::vector of bitpit::PiercedVector<std::array<double,3> > data.*/,
+    PVECFLOAT_                  /**< TAG related to a bitpit::PiercedVector<double>* data pointer.*/,
     LONGSHORT					/**< TAG related to a couple (normally used in pair or map containers) of a long and a short element data*/,
-    STRINGPAIRINTMIMMO_			/**< TAG related to a couple (normally used in pair or map containers) of a std::string and a pair of int and mimmo::MimmoObject* */,
-    LONGPAIRINTLONG				/**< TAG related to a couple (normally used in pair or map containers) of a long and a pair of int and long */,
-    PAIRMIMMO_VECFLOAT_			/**< TAG related to a std::pair<mimmo::MimmoObject*, std::vector<double>* > data.*/,
-    PAIRMIMMO_VECARR3FLOAT_		/**< TAG related to a std::pair<mimmo::MimmoObject*, std::vector<std::array<double,3> >* > data.*/,
-    PAIRMIMMO_OBJFLOAT_     	/**< TAG related to a std::pair<mimmo::BaseManipulation *, double> data.*/,
     SHAPET						/**< TAG related to a mimmo::ShapeType data.*/,
     SHAPE_						/**< TAG related to a mimmo::BasicShape* data.*/,
     COORDT						/**< TAG related to a mimmo::CoordType data.*/,
@@ -294,6 +276,9 @@ extern bool MIMMO_EXPERT; /**<Flag that defines expert mode (true) or safe mode 
                                 In case of expert mode active the mandatory ports are not checked. */
 
 void setExpertMode(bool flag = true);
+
+//miscellanea
+double  maxvalmp(const MimmoPiercedVector<double, long int> & field);
 
 }//end namespace mimmo
 

@@ -51,16 +51,15 @@ namespace mimmo{
     | Port Input | | | |
     |-|-|-|-|
     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-    | 11    | M_GDISPLS| setDefField       | (VECARR3E, FLOAT)       |
+    | 11    | M_GDISPLS| setDefField       | (MPVECARR3E, FLOAT)       |
     | 99    | M_GEOM   | setGeometry       | (SCALAR, MIMMO_)        |
 
 
     |Port Output | | | |
     |-|-|-|-|
     |<B>PortID</B> | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>              |
-    | 19    | M_SCALARFIELD | getViolationField | (VECTOR, FLOAT)             |
+    | 18    | M_SCALARFIELD | getViolationField | (MPVECTOR, FLOAT)             |
     | 30    | M_VALUED      | getViolation      | (SCALAR, FLOAT)             |
-    | 82    | M_VIOLATION   | getViolationPair  | (PAIR,PAIRMIMMO_OBJFLOAT_)  |
 
  *    =========================================================
  * \n
@@ -97,8 +96,8 @@ namespace mimmo{
 class ControlDeformExtSurface: public BaseManipulation{
 private:
     std::unordered_map<std::string, std::pair<double, int> > m_geolist; /**< list of file for geometrical proximity check*/
-    dvector1D                    m_violationField;    /**<Violation Field as distance from constraint */
-    dvecarr3E                    m_defField;     /**<Deformation field*/
+    dmpvector1D                    m_violationField;    /**<Violation Field as distance from constraint */
+    dmpvecarr3E                    m_defField;     /**<Deformation field*/
     int                         m_cellBackground; /**< Number of cells N to determine background grid spacing */
     std::unordered_set<int>        m_allowed; /**< list of currently file format supported by the class*/
 public:
@@ -112,12 +111,11 @@ public:
     void    buildPorts();
 
     double                                     getViolation();
-    std::pair<BaseManipulation*, double>    getViolationPair();
-    dvector1D                                getViolationField();
+    dmpvector1D                                getViolationField();
     double                                     getToleranceWithinViolation(std::string);
     int                                     getBackgroundDetails();
 
-    void    setDefField(dvecarr3E field);
+    void    setDefField(dmpvecarr3E field);
     void     setGeometry(MimmoObject * geo);
     void     setBackgroundDetails(int nCell=50);
     const     std::unordered_map<std::string, std::pair<double, int> > &     getFiles() const;
@@ -141,6 +139,7 @@ private:
     void readGeometries(std::vector<std::unique_ptr<MimmoGeometry> > & extGeo, std::vector<double> & tols);
     svector1D extractInfo(std::string file);
     double evaluateSignedDistance(darray3E &point, mimmo::MimmoObject * geo, long & id, darray3E & normal, double &initRadius);
+    void writeLog();
 };
 
 REGISTER(BaseManipulation, ControlDeformExtSurface,"mimmo.ControlDeformExtSurface")

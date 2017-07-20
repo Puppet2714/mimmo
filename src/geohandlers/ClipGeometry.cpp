@@ -279,7 +279,7 @@ ClipGeometry::clipPlane(){
     if(getGeometry()->getType() == 3){
         counter = 0;
         result.resize(tri->getVertexCount());
-        for(auto vert : tri->getVertices()){
+        for(const auto vert : tri->getVertices()){
             iD = vert.getId();
             if(sig*(dotProduct(norm, vert.getCoords()) + offset) >0){
                 result[counter] = iD;
@@ -290,7 +290,7 @@ ClipGeometry::clipPlane(){
     }else{
         counter = 0;
         result.resize(tri->getCellCount());
-        for(auto cell : tri->getCells()){
+        for(const auto cell : tri->getCells()){
             iD = cell.getId();
             if(sig*(dotProduct(norm, tri->evalCellCentroid(iD)) + offset) >0){
                 result[counter] = iD;
@@ -311,7 +311,8 @@ ClipGeometry::plotOptionalResults(){
     if(getClippedPatch() == NULL) return;
     if(getClippedPatch()->isEmpty()) return;
 
-    dvecarr3E points = getClippedPatch()->getVertexCoords();
+    liimap mapDataInv;
+    dvecarr3E points = getClippedPatch()->getVertexCoords(&mapDataInv);
     ivector2D connectivity;
     bitpit::VTKElementType cellType;
 
@@ -320,7 +321,7 @@ ClipGeometry::plotOptionalResults(){
 
 
     if (getClippedPatch()->getType() != 3){
-        connectivity = getClippedPatch()->getCompactConnectivity();
+        connectivity = getClippedPatch()->getCompactConnectivity(mapDataInv);
     }
     else{
         int np = points.size();

@@ -145,7 +145,6 @@ PortOutT<T,O>::writeBuffer(){
     if (m_var_ != NULL){
         m_obuffer << (*m_var_);
     }
-    return;
 }
 
 
@@ -280,7 +279,6 @@ PortInT<T, O>::readBuffer(){
     if (m_var_ != NULL){
         (*m_var_) = temp;
     }
-    return;
 }
 
 }
