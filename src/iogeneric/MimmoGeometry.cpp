@@ -829,7 +829,9 @@ MimmoGeometry::write(){
             getGeometry()->getPatch()->dump(out);
             buffer.close();
         }
-        
+        return true;
+    }
+    break;
     default: //never been reached
         break;
     }
