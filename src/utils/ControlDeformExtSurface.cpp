@@ -110,7 +110,7 @@ double
 ControlDeformExtSurface::getViolation(){
 
     double result = -1.0E+18;
-    for(const auto & val : m_violationField){
+    for(const auto & val : m_violationField.data()){
         result = std::fmax(result, val);
     }
 
@@ -285,7 +285,7 @@ ControlDeformExtSurface::execute(){
     long int ID;
     for (const auto & v : geo->getVertices()){
         ID = v.getId();
-        m_violationField.insert(ID, -1.0e+18);
+        m_violationField.data().insert(ID, -1.0e+18);
     }
 
     dvector1D violationField;
@@ -510,7 +510,7 @@ ControlDeformExtSurface::execute(){
         }//end if else
 
         int ii = 0;
-        for(auto & val : m_violationField){
+        for(auto & val : m_violationField.data()){
             val = std::fmax(val, (violationField[ii] + tols[counterExtGeo]));
             ++ii;
         }
@@ -736,7 +736,7 @@ ControlDeformExtSurface::plotOptionalResults(){
     dvecarr3E  points = getGeometry()->getVertexCoords(&map);
     dvecarr3E deff(m_defField.size());
     int count = 0;
-    for (const auto & f : m_defField){
+    for (const auto & f : m_defField.data()){
         deff[count] = f;
         ++count;
     }
@@ -754,7 +754,7 @@ ControlDeformExtSurface::plotOptionalResults(){
 
     dvector1D viol(m_violationField.size());
     count = 0;
-    for (const auto & f : m_violationField){
+    for (const auto & f : m_violationField.data()){
         viol[count] = f;
         ++count;
     }
