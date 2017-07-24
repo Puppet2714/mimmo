@@ -81,51 +81,15 @@ int test1() {
     stitch1->exec();
     stitch2->exec();
     
-<<<<<<< HEAD
     if(stitch1->getGeometry()->getNCells() !=2 || stitch2->getGeometry()->getNCells() !=2){
         delete m1;
         delete m2;
-        delete m3;
+	delete m3;
         delete stitch1;
         delete stitch2;
         return 1;
-    }
-    //define to fake fields on stitched geometries
-    dvector1D field1(2, 1.0);
-    dvector1D field2(2, 2.0);
-    
-    //Split fields
-    SplitScalarField * split1 = new SplitScalarField();
-    SplitScalarField * split2 = new SplitScalarField();
-    
-    split1->setGeometry(stitch1->getGeometry());
-    split1->setField(field1);
-    split1->setSplittedGeometries(stitch1->getOriginalGeometries());
-    split1->setCellDivisionMap(stitch1->getCellDivisionMap());
-    
-    split2->setGeometry(stitch2->getGeometry());
-    split2->setField(field2);
-    split2->setSplittedGeometries(stitch2->getOriginalGeometries());
-    split2->setCellDivisionMap(stitch2->getCellDivisionMap());
-    
-    split1->exec();
-    split2->exec();
-    
-    //overlap Fields
-    OverlapScalarFields * olap = new OverlapScalarFields();
-    
-    olap->setOverlapCriterium(4);
-    olap->setDataFieldMap(split1->getSplittedData());
-    olap->setDataFieldMap(split2->getSplittedData());
-    
-    olap->exec();
-    
-    auto datafield = olap->getDataFieldMap();
-    
-=======
-    if(stitch1->getGeometry()->getNCells() !=2 || stitch2->getGeometry()->getNCells() !=2) return 1;
+   }	
 
->>>>>>> devel.PV
     bool check = true;
     
     std::cout<<"test passed :"<<check<<std::endl; 
