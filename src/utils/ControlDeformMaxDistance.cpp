@@ -189,7 +189,7 @@ ControlDeformMaxDistance::execute(){
     }
 
     m_violationField.setGeometry(getGeometry());
-    m_violationField.setName("violation");
+//     m_violationField.setName("violation");
 
     //write log
     std::string logname = m_name+"_violation";

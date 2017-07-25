@@ -337,7 +337,7 @@ ReconstructScalar::execute(){
     for (int i=0; i<getNData(); i++){
         dmpvector1D* pv = &m_subpatch[i];
         m_subresults[i].setGeometry(pv->getGeometry());
-        m_subresults[i].setName(pv->getName());
+//         m_subresults[i].setName(pv->getName());
         long int ID;
         for (const auto vertex : pv->getGeometry()->getVertices()){
             ID = vertex.getId();
@@ -348,8 +348,8 @@ ReconstructScalar::execute(){
     //Update field on whole geometry
     if(getGeometry() != NULL){
         m_result.setGeometry(getGeometry());
-        if (m_subresults.size() != 0)
-            m_result.setName(m_subresults[0].getName());
+//         if (m_subresults.size() != 0)
+//             m_result.setName(m_subresults[0].getName());
         double zero = 0.0;
         long int ID;
         for (const auto vertex : getGeometry()->getVertices()){
