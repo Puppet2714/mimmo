@@ -250,10 +250,10 @@ GenericOutput::setResult(dmpvector1D data){
     file.open(m_dir+"/"+m_filename);
     if (file.is_open()){
         if (m_binary){
-            bitpit::genericIO::flushBINARY(file, data.data(), true);
+            bitpit::genericIO::flushBINARY(file, data, true);
         }
         else{
-            bitpit::genericIO::flushASCII(file, 1, data.data(), true);
+            bitpit::genericIO::flushASCII(file, 1, data, true);
         }
         file.close();
     }
@@ -273,10 +273,10 @@ GenericOutput::setResult(dmpvecarr3E data){
     file.open(m_dir+"/"+m_filename);
     if (file.is_open()){
         if (m_binary){
-            bitpit::genericIO::flushBINARY(file, data.data(), true);
+            bitpit::genericIO::flushBINARY(file, data, true);
         }
         else{
-            bitpit::genericIO::flushASCII(file, 3, data.data(), true);
+            bitpit::genericIO::flushASCII(file, 3, data, true);
         }
         file.close();
     }
