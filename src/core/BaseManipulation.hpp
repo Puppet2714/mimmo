@@ -25,6 +25,7 @@
 #define __BASEMANIPULATION_HPP__
 
 #include "factory.hpp"
+#include "portManager.hpp"
 #include "MimmoNamespace.hpp"
 #include "MimmoObject.hpp"
 #include "InOut.hpp"
@@ -116,24 +117,24 @@ class BaseManipulation{
 public:
     //type definitions
     typedef std::unordered_map<BaseManipulation*, int>    bmumap;            /**<Unordered map type used for parent/child storing.*/
-    typedef pin::ConnectionType                            ConnectionType;    /**<Connection type specification for Manipulation object.*/
-    typedef    short int                                    PortID;            /**<Port ID (identifier of the port).*/
+    typedef pin::ConnectionType                           ConnectionType;    /**<Connection type specification for Manipulation object.*/
+    typedef   std::string                                 PortID;            /**<Port ID (identifier of the port).*/
 
 protected:
     uint                        m_priority;         /**<Flag marking priority of execution of the object (0 - highest priority) >*/
-    std::string                    m_name;                /**<Name of the manipulation object.*/
+    std::string                 m_name;                /**<Name of the manipulation object.*/
     int                         m_counter;            /**<Counter ID associated to the object */
     MimmoObject*                m_geometry;            /**<Pointer to manipulated geometry. */
-    bmumap                        m_parent;            /**<Pointers list to manipulation objects FATHER of the current class. List retains for each
+    bmumap                      m_parent;            /**<Pointers list to manipulation objects FATHER of the current class. List retains for each
                                                         pointer a counter. When this counter is 0, pointer is released*/
-    bmumap                        m_child;            /**<Pointers list to manipulation objects CHILD of the current class.List retains for each
+    bmumap                      m_child;            /**<Pointers list to manipulation objects CHILD of the current class.List retains for each
                                                         pointer a counter. When this counter is 0, pointer is released*/
 
-    ConnectionType                m_portsType;        /**<Type of ports of the object: BOTH (bidirectional),
+    ConnectionType              m_portsType;        /**<Type of ports of the object: BOTH (bidirectional),
                                                         BACKWARD (only input) or FORWARD (only output).*/
-    std::map<PortID, PortIn*>    m_portIn;            /**<Input ports map. */
-    std::map<PortID, PortOut*>    m_portOut;            /**<Output ports map. */
-    bool                        m_arePortsBuilt;    /**<True or false is the ports are already set or not.*/
+    std::unordered_map<PortID, PortIn*>   m_portIn;            /**<Input ports map. */
+    std::unordered_map<PortID, PortOut*>  m_portOut;            /**<Output ports map. */
+    bool                                  m_arePortsBuilt;    /**<True or false is the ports are already set or not.*/
 
     bool                        m_active;            /**<True/false to activate/disable the object during the execution.*/
     bool                        m_execPlot;         /**<Activate plotting of optional result directly in execution.*/
@@ -158,19 +159,20 @@ public:
     bool                arePortsBuilt();
 
     uint                 getPriority();
-    std::string            getName();
-    MimmoObject*        getGeometry();
-    int                    getNParent();
+    std::string          getName();
+    MimmoObject*         getGeometry();
+    int                  getNParent();
     BaseManipulation*    getParent(int i = 0);
-    bool                isParent(BaseManipulation *, int&);
-    int                    getNChild();
+    bool                 isParent(BaseManipulation *, int&);
+    int                  getNChild();
     BaseManipulation*    getChild(int i = 0);
-    bool                isChild(BaseManipulation *, int&);
-    ConnectionType        getConnectionType();
-    int                 getNPortsIn();
-    int                 getNPortsOut();
-    std::map<PortID, PortIn*> getPortsIn();
-    std::map<PortID, PortOut*>getPortsOut();
+    bool                 isChild(BaseManipulation *, int&);
+    ConnectionType       getConnectionType();
+    int                  getNPortsIn();
+    int                  getNPortsOut();
+    
+    std::unordered_map<PortID, PortIn*> getPortsIn();
+    std::unordered_map<PortID, PortOut*>getPortsOut();
 
     bool    isPlotInExecution();
     bool    isActive();
@@ -178,9 +180,9 @@ public:
     int     getClassCounter();
     int     getId();
 
-    void     setPriority(uint priority);
+    void    setPriority(uint priority);
     void    setName(std::string name);
-    void     setGeometry(MimmoObject* geometry);
+    void    setGeometry(MimmoObject* geometry);
     void    setPlotInExecution(bool);
     void    setOutputPlot(std::string path);
     void    setClassCounter(int );
@@ -190,13 +192,13 @@ public:
     void    activate();
     void    disable();
 
-    void     unsetGeometry();
-    void     removePins();
-    void     removePinsIn();
-    void     removePinsOut();
+    void    unsetGeometry();
+    void    removePins();
+    void    removePinsIn();
+    void    removePinsOut();
     void    clear();
 
-    void     exec();
+    void    exec();
 
     virtual void absorbSectionXML(const bitpit::Config::Section & slotXML, std::string name = "");
     virtual void flushSectionXML(bitpit::Config::Section & slotXML, std::string name= "");
@@ -211,7 +213,7 @@ protected:
      * Pure virtual method.
      */
     virtual void     buildPorts() = 0;
-    void            deletePorts();
+    void             deletePorts();
 
     template<typename T, typename O>
     bool    createPortOut(O* obj, T (O::*getVar_)(), PortID portS, containerTAG conType, dataTAG dataType);
@@ -231,11 +233,11 @@ protected:
 
     void    addParent(BaseManipulation* parent);
     void    addChild(BaseManipulation* child);
-    void     unsetParent(BaseManipulation * parent);
-    void     unsetChild(BaseManipulation * child);
+    void    unsetParent(BaseManipulation * parent);
+    void    unsetChild(BaseManipulation * child);
 
-    PortID    findPinIn(PortIn& pin);
-    PortID    findPinOut(PortOut& pin);
+    PortID   findPinIn(PortIn& pin);
+    PortID   findPinOut(PortOut& pin);
 
     void    addPinIn(BaseManipulation* objIn, PortID portR);
     void    addPinOut(BaseManipulation* objOut, PortID portS, PortID portR);
@@ -243,16 +245,14 @@ protected:
     void    removePinIn(BaseManipulation* objIn, PortID portR);
     void    removePinOut(BaseManipulation* objOut, PortID portS);
 
-    void     removePinIn(PortID portR, int j);
-    void     removePinOut(PortID portS, int j);
+    void    removePinIn(PortID portR, int j);
+    void    removePinOut(PortID portS, int j);
 
     /*!Execution method.
      * Pure virtual method, it has to be implemented in derived classes.
      */
     virtual void     execute() = 0;
-
     virtual void     plotOptionalResults();
-
     virtual void     apply();
 
 };
