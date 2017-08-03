@@ -27,6 +27,103 @@
 #include "MimmoObject.hpp"
 #include "BaseManipulation.hpp"
 
+/*!
+ * \ingroup Ports
+ * \{
+ */
+
+//PORTS DEFINITION AS CONSTANTS
+#ifndef M_GEOM
+#define M_GEOM "M_GEOM" /**< Port dedicated to communication of pointers to a MimmoObject object*/
+#endif
+
+#ifndef M_VECGEOM 
+#define M_VECGEOM "M_VECGEOM" /**< Port dedicated to communication  of std::vector of MimmoObject pointers.*/
+#endif
+
+#ifndef M_MAPDCELL
+#define M_MAPDCELL "M_MAPDCELL" /**< Port dedicated to communication of a unordered map of cell-ids of type < long, std::pair < int, long > >*/
+#endif
+
+#ifndef M_MAPDVERT
+#define M_MAPDVERT "M_MAPDVERT" /**< Port dedicated to communication of a unordered map of vertex-ids of type < long, std::pair < int, long > >*/
+#endif
+
+#ifndef M_SCALARFIELD 
+#define M_SCALARFIELD "M_SCALARFIELD" /**< Port dedicated to communication of a generic scalar field [ vector < double > ].*/
+#endif
+
+#ifndef M_GDISPLS
+#define M_GDISPLS "M_GDISPLS" /**< Port dedicated to communication of displacements of geometry vertex [vector< array < double,3 > >].*/
+#endif
+
+#ifndef M_UMGEOSFD 
+#define M_UMGEOSFD "M_UMGEOSFD" /**< Port dedicated to communication of an unorderd map of MimmoObject pointers  and std::vector< double > pointers.*/
+#endif
+
+#ifndef M_UMGEOVFD 
+#define M_UMGEOVFD "M_UMGEOVFD" /**< Port dedicated to communication of an unorderd map of MimmoObject pointers  and std::vector< std::array < double,3> > pointers.*/
+#endif
+
+/*!
+ * \}
+ */
+
+/*!
+ * \ingroup PortContainers
+ * \{
+ */
+
+#ifndef MC_SCALAR
+#define MC_SCALAR "MC_SCALAR" /**< Single value container identifier*/
+#endif
+
+#ifndef MC_VECTOR 
+#define MC_VECTOR "MC_VECTOR" /**< std::vector< . > container identifier*/
+#endif
+
+#ifndef MC_UN_MAP
+#define MC_UN_MAP "MC__UN_MAP" /**< std::unordered_map< . , .> container identifier*/
+#endif
+
+#ifndef MC_VECARR3
+#define MC_VECARR3 "MC_VECARR3" /**< std::vector< std::array< . , 3 > > container identifier*/
+#endif
+
+/*!
+ * \}
+ */
+
+/*!
+ * \ingroup PortData
+ * \{
+ */
+#ifndef MD_LONGPAIRINTLONG
+#define MD_LONGPAIRINTLONG "MD_LONGPAIRINTLONG" /**< tuple (long, std::pair< int, long>) data identifier*/
+#endif
+
+#ifndef MD_FLOAT 
+#define MD_FLOAT "MD_FLOAT" /**< float/double data identifier*/
+#endif
+
+#ifndef MD_MIMMO_ 
+#define MD_MIMMO_ "MD_MIMMO_" /**< MimmoObject pointer data identifier*/
+#endif
+
+#ifndef MD_MIMMO_VECFLOAT_
+#define MD_MIMMO_VECFLOAT_ "MD_MIMMO_VECFLOAT_" /**< tuple (MimmoObject *, std::vector< double > *) data identifier*/
+#endif
+
+#ifndef MD_MIMMO_VECARR3FLOAT_
+#define MD__MIMMO_VECARR3FLOAT_ "MD__MIMMO_VECARR3FLOAT_" /**< tuple (MimmoObject *, std::vector< std::array< double, 3> > *) data identifier*/
+#endif
+
+/*!
+ * \}
+ */
+
+
+
 namespace mimmo{
 
 /*!
@@ -43,18 +140,18 @@ namespace mimmo{
  *
  *    =========================================================
  *
-     |                 Port Input     |||                                                     |
-     |-------|------------|------------------------------------|-----------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 99    | M_GEOM     | setGeometry                        | (SCALAR, MIMMO_)            |
-     | 100   | M_VECGEOM  | setSplittedGeometries              | (VECTOR, MIMMO_)            |
-     | 104   | M_MAPDCELL | setCellDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)   |
-     | 105   | M_MAPDVERT | setVertDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)   |
+     |                 Port Input     ||                                                     |
+     |------------|------------------------------------|-----------------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_GEOM     | setGeometry                        | (MC_SCALAR, MD_MIMMO_)            |
+     | M_VECGEOM  | setSplittedGeometries              | (MC_VECTOR, MD_MIMMO_)            |
+     | M_MAPDCELL | setCellDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)   |
+     | M_MAPDVERT | setVertDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)   |
 
 
-    |            Port Output         |||             |
-     |-------|------------|------------------------------------|-----------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+    |            Port Output         ||             |
+    |------------|------------------------------------|-----------------------------|
+    | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
 
  *    =========================================================
  *
@@ -120,32 +217,32 @@ private:
  *
  *    =========================================================
  *
-     |                 Port Input   |||                              |
-     |-------|--------------|--------------------|----------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 19    | M_SCALARFIELD| setField           | (VECTOR, FLOAT)|
+     |                 Port Input   ||                              |
+     |--------------|--------------------|----------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_SCALARFIELD| setField           | (MC_VECTOR, MD_FLOAT)|
 
 
-     |            Port Output   |||                                        |
-     |-------|-----------|-------------------|--------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 106   | M_UMGEOSFD| getSplittedData   | (UN_MAP, MIMMO_VECFLOAT_)|
+     |            Port Output   ||                                        |
+     |-----------|-------------------|--------------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_UMGEOSFD| getSplittedData   | (MC_UN_MAP, MD_MIMMO_VECFLOAT_)|
 
 
   Inherited from SplitField
 
-     |                 Port Input   |||                                                         |
-     |-------|------------|------------------------------------|-----------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 99    | M_GEOM     | setGeometry                        | (SCALAR, MIMMO_)            |
-     | 100   | M_VECGEOM  | setSplittedGeometries              | (VECTOR, MIMMO_)            |
-     | 104   | M_MAPDCELL | setCellDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)   |
-     | 105   | M_MAPDVERT | setVertDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)   |
+     |                 Port Input   ||                                                         |
+     |------------|------------------------------------|-----------------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_GEOM     | setGeometry                        | (MC_SCALAR, MD_MIMMO_)            |
+     | M_VECGEOM  | setSplittedGeometries              | (MC_VECTOR, MD_MIMMO_)            |
+     | M_MAPDCELL | setCellDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)   |
+     | M_MAPDVERT | setVertDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)   |
 
 
-     |            Port Output  |||                               |
-     |-------|-----------|------------------------------------|-----------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     |            Port Output  ||                               |
+     |-----------|------------------------------------|-----------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
 
  *    =========================================================
  *
@@ -181,44 +278,31 @@ private:
  *
  *    =========================================================
  * ~~~
- *    |------------------------------------------------------------------|
- *    |                 Port Input                                       |
- *    |-------|--------------|-------------------|-----------------------|
- *    |PortID | PortType     | variable/function | DataType              |
- *    |-------|--------------|-------------------|-----------------------|
- *    | 11    | M_GDISPLS    | setField          | (VECARR3, FLOAT)      |
- *    |-------|--------------|-------------------|-----------------------|
+ *   |                 Port Input   ||                              |
+ *
+ *   |--------------|--------------------|----------------|
+ *   | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+ *   | M_GDISPLS| setField           | (MC_VECARR3E, MD_FLOAT)|
+ *
+ *   |            Port Output   ||                                        |
+ *   |-----------|-------------------|--------------------------|
+ *   | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+ *   | M_UMGEOVSFD| getSplittedData   | (MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_)|
+ *
+ * Inherited from SplitField
+ *
+ *   |                 Port Input   ||                                                         |
+ *   |------------|------------------------------------|-----------------------------|
+ *   | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+ *   | M_GEOM     | setGeometry                        | (MC_SCALAR, MD_MIMMO_)            |
+ *   | M_VECGEOM  | setSplittedGeometries              | (MC_VECTOR, MD_MIMMO_)            |
+ *   | M_MAPDCELL | setCellDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)   |
+ *   | M_MAPDVERT | setVertDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)   |
  *
  *
- *    |-----------------------------------------------------------------------|
- *    |            Port Output                                                |
- *    |-------|-----------|-------------------|-------------------------------|
- *    |PortID | PortType  | variable/function | DataType                      |
- *    |-------|-----------|-------------------|-------------------------------|
- *    | 107   | M_UMGEOVFD| getSplittedData   | (UN_MAP, MIMMO_VECARR3FLOAT_) |
- *    |-------|-----------|-------------------|-------------------------------|
- * 
- * 
- *  Inherited from SplitField
- * 
- *    |---------------------------------------------------------------------------------------|
- *    |                 Port Input                                                            |
- *    |-------|------------|------------------------------------|-----------------------------|
- *    |PortID | PortType   | variable/function                  | DataType                    |
- *    |-------|------------|------------------------------------|-----------------------------|
- *    | 99    | M_GEOM     | setGeometry                        | (SCALAR, MIMMO_)            |
- *    | 100   | M_VECGEOM  | setSplittedGeometries              | (VECTOR, MIMMO_)            |
- *    | 104   | M_MAPDCELL | setCellDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)   |
- *    | 105   | M_MAPDVERT | setVertDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)   |
- *    |-------|------------|------------------------------------|-----------------------------|
- *
- *
- *    |--------------------------------------------------------|-----------------------|
- *    |            Port Output                                 |                       |
- *    |-------|-----------|------------------------------------|-----------------------|
- *    |PortID | PortType  | variable/function                  | DataType              |
- *    |-------|-----------|------------------------------------|-----------------------|
- *    |-------|-----------|------------------------------------|-----------------------|
+ *   |            Port Output  ||                               |
+ *   |-----------|------------------------------------|-----------------------|
+ *   | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
  * ~~~
  *    =========================================================
  *
@@ -245,6 +329,18 @@ private:
     bool split();
 };
 
+//Ports registration
+REGISTER_PORT(M_GEOM, MC_SCALAR, MD_MIMMO_)
+REGISTER_PORT(M_VECGEOM, MC_VECTOR, MD_MIMMO_)
+REGISTER_PORT(M_MAPDCELL, MC_UN_MAP, MD_LONGPAIRINTLONG)
+REGISTER_PORT(M_MAPDVERT, MC_UN_MAP, MD_LONGPAIRINTLONG)
+REGISTER_PORT(M_SCALARFIELD, MC_VECTOR, MD_FLOAT)
+REGISTER_PORT(M_GDISPLS, MC_VECARR3, MD_FLOAT)
+REGISTER_PORT(M_UMGEOSFD, MC_UN_MAP, MD_MIMMO_VECFLOAT_)
+REGISTER_PORT(M_UMGEOVFD, MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_)
+
+
+//ManipBlocks registration
 REGISTER(BaseManipulation, SplitScalarField, "mimmo.SplitScalarField")
 REGISTER(BaseManipulation, SplitVectorField, "mimmo.SplitVectorField")
 };

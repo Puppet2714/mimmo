@@ -75,8 +75,8 @@ SplitVectorField::~SplitVectorField(){
 void
 SplitVectorField::buildPorts(){
     bool built = true;
-    built = (built && createPortIn<dvecarr3E, SplitVectorField>(this, &mimmo::SplitVectorField::setField, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT, true));
-    built = (built && createPortOut<std::unordered_map<MimmoObject*, dvecarr3E* >, SplitVectorField>(this, &mimmo::SplitVectorField::getSplittedData, PortType::M_UMGEOVFD, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
+    built = (built && createPortIn<dvecarr3E, SplitVectorField>(this, &mimmo::SplitVectorField::setField, M_GDISPLS,true));
+    built = (built && createPortOut<std::unordered_map<MimmoObject*, dvecarr3E* >, SplitVectorField>(this, &mimmo::SplitVectorField::getSplittedData,M_UMGEOVFD));
     SplitField::buildPorts();
     m_arePortsBuilt = built;
 }
