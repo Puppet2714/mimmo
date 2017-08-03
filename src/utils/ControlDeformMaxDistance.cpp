@@ -80,13 +80,13 @@ void
 ControlDeformMaxDistance::buildPorts(){
     bool built = true;
 
-    built = (built && createPortIn<dvecarr3E, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::setDefField, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT, true));
-    built = (built && createPortIn<double, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::setLimitDistance, PortType::M_VALUED, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<MimmoObject*, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::setGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true));
+    built = (built && createPortIn<dvecarr3E, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::setDefField, M_GDISPLS,true));
+    built = (built && createPortIn<double, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::setLimitDistance, M_VALUED));
+    built = (built && createPortIn<MimmoObject*, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::setGeometry, M_GEOM, true));
 
-    built = (built && createPortOut<double, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::getViolation, PortType::M_VALUED, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<dvector1D, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::getViolationField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<std::pair<BaseManipulation*, double>, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::getViolationPair, PortType::M_VIOLATION, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::PAIRMIMMO_OBJFLOAT_));
+    built = (built && createPortOut<double, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::getViolation, M_VALUED));
+    built = (built && createPortOut<dvector1D, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::getViolationField, M_SCALARFIELD));
+    built = (built && createPortOut<std::pair<BaseManipulation*, double>, ControlDeformMaxDistance>(this, &mimmo::ControlDeformMaxDistance::getViolationPair, M_VIOLATION));
     m_arePortsBuilt = built;
 };
 
@@ -119,12 +119,9 @@ ControlDeformMaxDistance::getViolation(){
 std::pair<BaseManipulation*, double> 
 ControlDeformMaxDistance::getViolationPair(){
 
-    //get map of Input ports of the class.
-    std::map<short int, mimmo::PortIn*> mapPorts = getPortsIn();
+    //get form input ports, the object who send geometry here - M_GEOM
 
-    //get class who send geometry here - portID = 99 -> M_GEOM
-
-    std::vector<BaseManipulation*> senders = mapPorts[99]->getLink();
+    std::vector<BaseManipulation*> senders = getPortsIn()[M_GEOM]->getLink();
 
     std::string etiq;
     if(senders.size() == 0){
