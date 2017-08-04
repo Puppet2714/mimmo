@@ -95,15 +95,15 @@ BendGeometry & BendGeometry::operator=(const BendGeometry & other){
 void
 BendGeometry::buildPorts(){
     bool built = true;
-    built = (built && createPortIn<MimmoObject*, BendGeometry>(&m_geometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true));
-    built = (built && createPortIn<dvector1D, BendGeometry>(this, &mimmo::BendGeometry::setFilter, PortType::M_FILTER, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<umatrix33E, BendGeometry>(&m_degree, PortType::M_BMATRIX, mimmo::pin::containerTAG::ARR3ARR3, mimmo::pin::dataTAG::INT));
-    built = (built && createPortIn<dmat33Evec, BendGeometry>(&m_coeffs, PortType::M_BCOEFFS, mimmo::pin::containerTAG::ARR3ARR3VEC, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<dmatrix33E, BendGeometry>(&m_system, PortType::M_AXES, mimmo::pin::containerTAG::ARR3ARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<darray3E, BendGeometry>(&m_origin, PortType::M_POINT, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<dvecarr3E, BendGeometry>(this, &mimmo::BendGeometry::getDisplacements, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<std::pair<MimmoObject*, dvecarr3E*> , BendGeometry>(this, &mimmo::BendGeometry::getDeformedField, PortType::M_PAIRVECFIELD, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
-    built = (built && createPortOut<MimmoObject*, BendGeometry>(this, &BaseManipulation::getGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
+    built = (built && createPortIn<MimmoObject*, BendGeometry>(&m_geometry, M_GEOM, true));
+    built = (built && createPortIn<dvector1D, BendGeometry>(this, &mimmo::BendGeometry::setFilter, M_FILTER));
+    built = (built && createPortIn<umatrix33E, BendGeometry>(&m_degree, M_BMATRIX));
+    built = (built && createPortIn<dmat33Evec, BendGeometry>(&m_coeffs, M_BCOEFFS));
+    built = (built && createPortIn<dmatrix33E, BendGeometry>(&m_system, M_AXES));
+    built = (built && createPortIn<darray3E, BendGeometry>(&m_origin, M_POINT));
+    built = (built && createPortOut<dvecarr3E, BendGeometry>(this, &mimmo::BendGeometry::getDisplacements, M_GDISPLS));
+    built = (built && createPortOut<std::pair<MimmoObject*, dvecarr3E*> , BendGeometry>(this, &mimmo::BendGeometry::getDeformedField, M_PAIRVECFIELD));
+    built = (built && createPortOut<MimmoObject*, BendGeometry>(this, &BaseManipulation::getGeometry, M_GEOM));
     m_arePortsBuilt = built;
 };
 
