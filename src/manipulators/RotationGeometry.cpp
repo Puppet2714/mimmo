@@ -85,14 +85,14 @@ RotationGeometry & RotationGeometry::operator=(const RotationGeometry & other){
 void
 RotationGeometry::buildPorts(){
     bool built = true;
-    built = (built && createPortIn<darray3E, RotationGeometry>(&m_origin, PortType::M_POINT, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<darray3E, RotationGeometry>(&m_direction, PortType::M_AXIS, mimmo::pin::containerTAG::ARRAY3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<double, RotationGeometry>(&m_alpha, PortType::M_VALUED, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<dvector1D, RotationGeometry>(this, &mimmo::RotationGeometry::setFilter, PortType::M_FILTER, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortIn<MimmoObject*, RotationGeometry>(&m_geometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true));
-    built = (built && createPortOut<dvecarr3E, RotationGeometry>(this, &mimmo::RotationGeometry::getDisplacements, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<std::pair<MimmoObject*, dvecarr3E*> , RotationGeometry>(this, &mimmo::RotationGeometry::getDeformedField, PortType::M_PAIRVECFIELD, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
-    built = (built && createPortOut<MimmoObject*, RotationGeometry>(this, &BaseManipulation::getGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
+    built = (built && createPortIn<darray3E, RotationGeometry>(&m_origin, M_POINT));
+    built = (built && createPortIn<darray3E, RotationGeometry>(&m_direction, M_AXIS));
+    built = (built && createPortIn<double, RotationGeometry>(&m_alpha, M_VALUED));
+    built = (built && createPortIn<dvector1D, RotationGeometry>(this, &mimmo::RotationGeometry::setFilter, M_FILTER));
+    built = (built && createPortIn<MimmoObject*, RotationGeometry>(&m_geometry, M_GEOM, true));
+    built = (built && createPortOut<dvecarr3E, RotationGeometry>(this, &mimmo::RotationGeometry::getDisplacements, M_GDISPLS));
+    built = (built && createPortOut<std::pair<MimmoObject*, dvecarr3E*> , RotationGeometry>(this, &mimmo::RotationGeometry::getDeformedField, M_PAIRVECFIELD));
+    built = (built && createPortOut<MimmoObject*, RotationGeometry>(this, &BaseManipulation::getGeometry, M_GEOM));
     m_arePortsBuilt = built;
 };
 
