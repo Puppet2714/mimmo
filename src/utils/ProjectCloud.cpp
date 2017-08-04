@@ -73,6 +73,10 @@ ProjectCloud & ProjectCloud::operator=(const ProjectCloud & other){
  */
 void
 ProjectCloud::buildPorts(){
+    
+    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
+    PortManager::instance().addPort(M_COORDS, MC_VECARR3, MD_FLOAT);
+    
     bool built = true;
 
     built = (built && createPortIn<dvecarr3E, ProjectCloud>(this, &mimmo::ProjectCloud::setCoords, M_COORDS, true));

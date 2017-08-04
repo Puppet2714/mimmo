@@ -89,14 +89,21 @@ ControlDeformExtSurface & ControlDeformExtSurface::operator=(const ControlDeform
  */
 void
 ControlDeformExtSurface::buildPorts(){
+    
+    PortManager::instance().addPort(M_GDISPLS, MC_VECARR3, MD_FLOAT);
+    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
+    PortManager::instance().addPort(M_VALUED, MC_SCALAR, MD_FLOAT);
+    PortManager::instance().addPort(M_SCALARFIELD, MC_VECTOR, MD_FLOAT);
+    PortManager::instance().addPort(M_VIOLATION, MC_PAIR, MD_PAIRMIMMO_OBJFLOAT_);
+    
     bool built = true;
 
-    built = (built && createPortIn<dvecarr3E, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::setDefField, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT, true));
-    built = (built && createPortIn<MimmoObject*, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::setGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true));
+    built = (built && createPortIn<dvecarr3E, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::setDefField, M_GDISPLS, true));
+    built = (built && createPortIn<MimmoObject*, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::setGeometry, M_GEOM, true));
 
-    built = (built && createPortOut<double, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolation, PortType::M_VALUED, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<dvector1D, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolationField, PortType::M_SCALARFIELD, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<std::pair<BaseManipulation*, double>, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolationPair, PortType::M_VIOLATION, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::PAIRMIMMO_OBJFLOAT_));
+    built = (built && createPortOut<double, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolation, M_VALUED));
+    built = (built && createPortOut<dvector1D, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolationField, M_SCALARFIELD));
+    built = (built && createPortOut<std::pair<BaseManipulation*, double>, ControlDeformExtSurface>(this, &mimmo::ControlDeformExtSurface::getViolationPair, M_VIOLATION));
     m_arePortsBuilt = built;
 };
 
@@ -129,12 +136,10 @@ ControlDeformExtSurface::getViolation(){
 std::pair<BaseManipulation*, double> 
 ControlDeformExtSurface::getViolationPair(){
 
-    //get map of Input ports of the class.
-    std::map<short int, mimmo::PortIn*> mapPorts = getPortsIn();
 
-    //get class who send geometry here - portID = 99 -> M_GEOM
+    //get class who send geometry here -> M_GEOM
 
-    std::vector<BaseManipulation*> senders = mapPorts[99]->getLink();
+    std::vector<BaseManipulation*> senders =  getPortsIn()[M_GEOM]->getLink();
 
     std::string etiq;
     if(senders.size() == 0){
