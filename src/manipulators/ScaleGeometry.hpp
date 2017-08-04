@@ -42,20 +42,20 @@ namespace mimmo{
  *
  *    =========================================================
 
-     |Port Input | | | |
-     |-|-|-|-|
-     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 20    | M_POINT  | setOrigin         | (ARRAY3, FLOAT)       |
-     | 23    | M_SPAN   | setScaling        | (ARRAY3, FLOAT)       |
-     | 12    | M_FILTER | setFilter         | (VECTOR, FLOAT)       |
-     | 99    | M_GEOM   | setGeometry       | (SCALAR, MIMMO_)      |
+     |Port Input | | |
+     |-|-|-|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_POINT  | setOrigin         | (MC_ARRAY3, MD_FLOAT)       |
+     | M_SPAN   | setScaling        | (MC_ARRAY3, MD_FLOAT)       |
+     | M_FILTER | setFilter         | (MC_VECTOR, MD_FLOAT)       |
+     | M_GEOM   | setGeometry       | (MC_SCALAR, MD_MIMMO_)      |
  
-     |Port Output | | | |
-     |-|-|-|-|
-     |<B>PortID</B> | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>|
-     | 11    | M_GDISPLS | getDisplacements  | (VECARR3, FLOAT)      |
-     | 80    | M_PAIRVECFIELD | getDeformedField  | (PAIR, MIMMO_VECARR3FLOAT_)  |
-     | 99    | M_GEOM   | getGeometry       | (SCALAR,MIMMO_) |
+     |Port Output | | |
+     |-|-|-|
+     | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>|
+     | M_GDISPLS | getDisplacements  | (MC_VECARR3, MD_FLOAT)      |
+     | M_PAIRVECFIELD | getDeformedField  | (MC_PAIR, MD_MIMMO_VECARR3FLOAT_)  |
+     | M_GEOM   | getGeometry       | (MC_SCALAR,MD_MIMMO_) |
  
  *    =========================================================
  *
@@ -109,6 +109,15 @@ public:
     virtual void flushSectionXML(bitpit::Config::Section & slotXML, std::string name= "");
 };
 
+//Ports
+REGISTER_PORT(M_POINT, MC_ARRAY3, MD_FLOAT)
+REGISTER_PORT(M_SPAN, MC_ARRAY3, MD_FLOAT)
+REGISTER_PORT(M_FILTER, MC_VECTOR, MD_FLOAT)
+REGISTER_PORT(M_GEOM, MC_SCALAR, MD_MIMMO_)
+REGISTER_PORT(M_GDISPLS, MC_VECARR3, MD_FLOAT)
+REGISTER_PORT(M_PAIRVECFIELD, MC_PAIR, MD_MIMMO_VECARR3FLOAT_)
+
+//ManipBlocks
 REGISTER(BaseManipulation, ScaleGeometry, "mimmo.ScaleGeometry")
 
 };
