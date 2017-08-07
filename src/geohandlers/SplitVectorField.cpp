@@ -74,6 +74,10 @@ SplitVectorField::~SplitVectorField(){
  */
 void
 SplitVectorField::buildPorts(){
+    
+    PortManager::instance().addPort(M_GDISPLS, MC_VECARR3, MD_FLOAT);
+    PortManager::instance().addPort(M_UMGEOVFD, MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_);
+    
     bool built = true;
     built = (built && createPortIn<dvecarr3E, SplitVectorField>(this, &mimmo::SplitVectorField::setField, M_GDISPLS,true));
     built = (built && createPortOut<std::unordered_map<MimmoObject*, dvecarr3E* >, SplitVectorField>(this, &mimmo::SplitVectorField::getSplittedData,M_UMGEOVFD));

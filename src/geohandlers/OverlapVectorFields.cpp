@@ -280,16 +280,20 @@ OverlapVectorFields::clear(){
 void
 OverlapVectorFields::buildPorts(){
 
+    PortManager::instance().addPort(M_PAIRVECFIELD, MC_PAIR, MD_MIMMO_VECARR3FLOAT_);
+    PortManager::instance().addPort(M_UMGEOVFD, MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_);
+    PortManager::instance().addPort(M_VECPAIRVF, MC_VECTOR, MD_PAIRMIMMO_VECARR3FLOAT_);
+    
     bool built = true;
 
     //input
-    built = (built && createPortIn<std::pair<MimmoObject *, dvecarr3E *>, OverlapVectorFields>(this, &mimmo::OverlapVectorFields::setAddDataField, PortType::M_PAIRVECFIELD, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
-    built = (built && createPortIn<std::unordered_map<MimmoObject *, dvecarr3E *>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::setDataFieldMap, PortType::M_UMGEOVFD, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
-    built = (built && createPortIn<std::vector<std::pair<MimmoObject *, dvecarr3E *>>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::setDataFieldList, PortType::M_VECPAIRVF, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::PAIRMIMMO_VECARR3FLOAT_));
+    built = (built && createPortIn<std::pair<MimmoObject *, dvecarr3E *>, OverlapVectorFields>(this, &mimmo::OverlapVectorFields::setAddDataField, M_PAIRVECFIELD));
+    built = (built && createPortIn<std::unordered_map<MimmoObject *, dvecarr3E *>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::setDataFieldMap, M_UMGEOVFD));
+    built = (built && createPortIn<std::vector<std::pair<MimmoObject *, dvecarr3E *>>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::setDataFieldList, M_VECPAIRVF));
 
     //output
-    built = (built && createPortOut<std::unordered_map<MimmoObject *, dvecarr3E *>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::getDataFieldMap, PortType::M_UMGEOVFD, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
-    built = (built && createPortOut<std::vector<std::pair<MimmoObject *, dvecarr3E *>>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::getDataFieldList, PortType::M_VECPAIRVF, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::PAIRMIMMO_VECARR3FLOAT_));
+    built = (built && createPortOut<std::unordered_map<MimmoObject *, dvecarr3E *>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::getDataFieldMap, M_UMGEOVFD));
+    built = (built && createPortOut<std::vector<std::pair<MimmoObject *, dvecarr3E *>>,OverlapVectorFields>(this, &mimmo::OverlapVectorFields::getDataFieldList, M_VECPAIRVF));
     m_arePortsBuilt = built;
 };
 

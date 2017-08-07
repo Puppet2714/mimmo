@@ -45,18 +45,18 @@ namespace mimmo{
  * 
  *    =========================================================
  *
-     |                   Port Input |||                                                  |
-     |-------|----------------|--------------------|----------------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 81    | M_PAIRSCAFIELD | setAddDataField    | (PAIR, MIMMO_VECFLOAT_)          |
-     | 106   | M_UMGEOSFD     | setDataFieldMap    | (UMAP, MIMMO_VECFLOAT_)          |
-     | 200   | M_VECPAIRSF    | setDataFieldList   | (VECTOR, PAIRMIMMO_VECFLOAT_)    |
+     |                   Port Input ||                                        |
+     |----------------|--------------------|----------------------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_PAIRSCAFIELD | setAddDataField    | (MC_PAIR, MD_MIMMO_VECFLOAT_)      |
+     | M_UMGEOSFD     | setDataFieldMap    | (MC_UN_MAP, MD_MIMMO_VECFLOAT_)    |
+     | M_VECPAIRSF    | setDataFieldList   | (MC_VECTOR, MD_PAIRMIMMO_VECFLOAT_)|
 
-     |             Port Output    |||                                                |
-     |-------|----------------|--------------------|------------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 106   | M_UMGEOSFD     | getDataFieldMap    | (UMAP, MIMMO_VECFLOAT_)      |
-     | 200   | M_VECPAIRSF    | getDataFieldList   | (VECTOR, PAIRMIMMO_VECFLOAT_)|
+     |             Port Output    ||                                      |
+     |----------------|--------------------|------------------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B>     |
+     | M_UMGEOSFD     | getDataFieldMap    | (MC_UN_MAP, MD_MIMMO_VECFLOAT_)    |
+     | M_VECPAIRSF    | getDataFieldList   | (MC_VECTOR, MD_PAIRMIMMO_VECFLOAT_)|
 
  *    =========================================================
  *
@@ -143,18 +143,18 @@ private:
  * 
  *    =========================================================
  *
-     |                   Port Input    |||                                              |
-     |-------|----------------|------------------|-----------------------------------|
-     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 80    | M_PAIRVECFIELD | setAddDataField  | (PAIR, MIMMO_VECARR3FLOAT_)       |
-     | 107   | M_UMGEOSVD     | setDataFieldMap  | (UMAP, MIMMO_VECARR3FLOAT_)       |
-     | 201   | M_VECPAIRVF    | setDataFieldList | (VECTOR, PAIRMIMMO_VECARR3EFLOAT_)|
+     |                   Port Input    ||                                          |
+     |----------------|------------------|-----------------------------------|
+     |<B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_PAIRVECFIELD | setAddDataField  | (MC_PAIR, MD_MIMMO_VECARR3FLOAT_)       |
+     | M_UMGEOVFD     | setDataFieldMap  | (MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_)     |
+     | M_VECPAIRVF    | setDataFieldList | (MC_VECTOR, MD_PAIRMIMMO_VECARR3EFLOAT_)|
 
-     |             Port Output      |||                                                   |
-     |-------|----------------|--------------------|-----------------------------------|
-     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 107   | M_UMGEOVFD     | getDataFieldMap    | (UMAP, MIMMO_VECARR3EFLOAT_)      |
-     | 201   | M_VECPAIRVF    | getDataFieldList   | (VECTOR, PAIRMIMMO_VECARR3EFLOAT_)|
+     |             Port Output      ||                                             |
+     |----------------|--------------------|-----------------------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_UMGEOVFD     | getDataFieldMap    | (MC_UN_MAP, MD_MIMMO_VECARR3EFLOAT_)    |
+     | M_VECPAIRVF    | getDataFieldList   | (MC_VECTOR, MD_PAIRMIMMO_VECARR3EFLOAT_)|
 
  *    =========================================================
  *

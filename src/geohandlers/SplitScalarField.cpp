@@ -75,6 +75,10 @@ SplitScalarField::~SplitScalarField(){
  */
 void
 SplitScalarField::buildPorts(){
+    
+    PortManager::instance().addPort(M_SCALARFIELD, MC_VECTOR, MD_FLOAT);
+    PortManager::instance().addPort(M_UMGEOSFD, MC_UN_MAP, MD_MIMMO_VECFLOAT_);
+    
     bool built = true;
     built = (built && createPortIn<dvector1D, SplitScalarField>(this, &mimmo::SplitScalarField::setField, M_SCALARFIELD, true));
     built = (built && createPortOut<std::unordered_map<MimmoObject*, dvector1D* >, SplitScalarField>(this, &mimmo::SplitScalarField::getSplittedData, M_UMGEOSFD));

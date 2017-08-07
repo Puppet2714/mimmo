@@ -42,20 +42,20 @@ namespace mimmo{
  *
  *    =========================================================
 
-     |Port Input | | | |
-     |-|-|-|-|
-     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 99    | M_GEOM   | setAddGeometry                     | (SCALAR, MIMMO_)      |
-     | 100   | M_VECGEOM| setGeometry                        | (VECTOR, MIMMO_)      |
+     |Port Input | | |
+     |-|-|-|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_GEOM   | setAddGeometry                     | (MC_SCALAR, MD_MIMMO_)      |
+     | M_VECGEOM| setGeometry                        | (MC_VECTOR, MD_MIMMO_)      |
 
 
-     |Port Output | | | |
-     |-|-|-|-|
-     |<B>PortID</B> | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>              |
-     | 99    | M_GEOM    | getGeometry                        | (SCALAR, MIMMO_)         |
-     | 100   | M_VECGEOM | getOriginalGeometries              | (VECTOR, MIMMO_)         |
-     | 104   | M_MAPDCELL| getCellDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)|
-     | 105   | M_MAPDVERT| getVertDivisionMap                 | (UN_MAP, LONGPAIRINTLONG)|
+     |Port Output | | |
+     |-|-|-|
+     | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>              |
+     | M_GEOM    | getGeometry                        | (MC_SCALAR, MD_MIMMO_)         |
+     | M_VECGEOM | getOriginalGeometries              | (MC_VECTOR, MD_MIMMO_)         |
+     | M_MAPDCELL| getCellDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)|
+     | M_MAPDVERT| getVertDivisionMap                 | (MC_UN_MAP, MD_LONGPAIRINTLONG)|
 
  *    =========================================================
  *

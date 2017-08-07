@@ -92,6 +92,9 @@ SelectionByBoxWithScalar & SelectionByBoxWithScalar::operator=(const SelectionBy
 void
 SelectionByBoxWithScalar::buildPorts(){
 
+    
+    PortManager::instance().addPort(M_SCALARFIELD, MC_VECTOR, MD_FLOAT);
+    
     bool built = true;
 
     SelectionByBox::buildPorts();

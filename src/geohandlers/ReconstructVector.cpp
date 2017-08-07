@@ -412,17 +412,23 @@ ReconstructVector::checkOverlapping(){
 void
 ReconstructVector::buildPorts(){
 
+    PortManager::instance().addPort(M_PAIRVECFIELD, MC_PAIR, MD_MIMMO_VECARR3FLOAT_);
+    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
+    PortManager::instance().addPort(M_VECPAIRVF, MC_VECTOR, MD_PAIRMIMMO_VECARR3FLOAT_);
+    PortManager::instance().addPort(M_GDISPLS, MC_VECARR3, MD_FLOAT);
+    
+    
     bool built = true;
 
     //input
-    built = (built && createPortIn<MimmoObject *, ReconstructVector>(&m_geometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_, true));
-    built = (built && createPortIn<std::pair<MimmoObject *, dvecarr3E *>,ReconstructVector>(this, &mimmo::ReconstructVector::setData, PortType::M_PAIRVECFIELD, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_, true, 1));
-    built = (built && createPortIn<std::vector<std::pair<MimmoObject *, dvecarr3E *> >,ReconstructVector>(this, &mimmo::ReconstructVector::setData, PortType::M_VECPAIRVF, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::PAIRMIMMO_VECARR3FLOAT_, true, 1));
+    built = (built && createPortIn<MimmoObject *, ReconstructVector>(&m_geometry, M_GEOM, true));
+    built = (built && createPortIn<std::pair<MimmoObject *, dvecarr3E *>,ReconstructVector>(this, &mimmo::ReconstructVector::setData, M_PAIRVECFIELD, true, 1));
+    built = (built && createPortIn<std::vector<std::pair<MimmoObject *, dvecarr3E *> >,ReconstructVector>(this, &mimmo::ReconstructVector::setData, M_VECPAIRVF, true, 1));
 
     //output
-    built = (built && createPortOut<dvecarr3E, ReconstructVector>(this, &ReconstructVector::getResultField, PortType::M_GDISPLS, mimmo::pin::containerTAG::VECARR3, mimmo::pin::dataTAG::FLOAT));
-    built = (built && createPortOut<MimmoObject *, ReconstructVector>(&m_geometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortOut<std::pair<MimmoObject *, dvecarr3E *>,ReconstructVector>(this, &mimmo::ReconstructVector::getResultFieldPair, PortType::M_PAIRVECFIELD, mimmo::pin::containerTAG::PAIR, mimmo::pin::dataTAG::MIMMO_VECARR3FLOAT_));
+    built = (built && createPortOut<dvecarr3E, ReconstructVector>(this, &ReconstructVector::getResultField, M_GDISPLS));
+    built = (built && createPortOut<MimmoObject *, ReconstructVector>(&m_geometry, M_GEOM));
+    built = (built && createPortOut<std::pair<MimmoObject *, dvecarr3E *>,ReconstructVector>(this, &mimmo::ReconstructVector::getResultFieldPair, M_PAIRVECFIELD));
     m_arePortsBuilt = built;
 };
 

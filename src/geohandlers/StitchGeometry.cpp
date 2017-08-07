@@ -108,14 +108,20 @@ StitchGeometry & StitchGeometry::operator=(const StitchGeometry & other){
  */
 void
 StitchGeometry::buildPorts(){
+    
+    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
+    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_MIMMO_);
+    PortManager::instance().addPort(M_MAPDCELL, MC_UN_MAP, MD_LONGPAIRINTLONG);
+    PortManager::instance().addPort(M_MAPDVERT, MC_UN_MAP, MD_LONGPAIRINTLONG);
+    
     bool built = true;
-    built = (built && createPortIn<std::vector<MimmoObject*>, StitchGeometry>(this, &mimmo::StitchGeometry::setGeometry, PortType::M_VECGEOM, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortIn<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::setAddGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
+    built = (built && createPortIn<std::vector<MimmoObject*>, StitchGeometry>(this, &mimmo::StitchGeometry::setGeometry, M_VECGEOM));
+    built = (built && createPortIn<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::setAddGeometry, M_GEOM));
 
-    built = (built && createPortOut<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::getGeometry, PortType::M_GEOM, mimmo::pin::containerTAG::SCALAR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortOut<std::vector<MimmoObject*>, StitchGeometry>(this, &mimmo::StitchGeometry::getOriginalGeometries, PortType::M_VECGEOM, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortOut<std::unordered_map<long,std::pair<int, long> >, StitchGeometry>(this, &mimmo::StitchGeometry::getCellDivisionMap, PortType::M_MAPDCELL, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::LONGPAIRINTLONG));
-    built = (built && createPortOut<std::unordered_map<long,std::pair<int, long> >, StitchGeometry>(this, &mimmo::StitchGeometry::getVertDivisionMap, PortType::M_MAPDVERT, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::LONGPAIRINTLONG));
+    built = (built && createPortOut<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::getGeometry, M_GEOM));
+    built = (built && createPortOut<std::vector<MimmoObject*>, StitchGeometry>(this, &mimmo::StitchGeometry::getOriginalGeometries, M_VECGEOM));
+    built = (built && createPortOut<std::unordered_map<long,std::pair<int, long> >, StitchGeometry>(this, &mimmo::StitchGeometry::getCellDivisionMap, M_MAPDCELL));
+    built = (built && createPortOut<std::unordered_map<long,std::pair<int, long> >, StitchGeometry>(this, &mimmo::StitchGeometry::getVertDivisionMap, M_MAPDVERT));
     m_arePortsBuilt = built;
 }
 
