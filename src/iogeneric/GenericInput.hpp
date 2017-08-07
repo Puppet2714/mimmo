@@ -48,27 +48,27 @@ namespace mimmo{
  *
  *    =========================================================
 
-     |                 Port Input  |||                                 |
-     |-------|----------|-------------------|-----------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     |                 Port Input  ||                                 |
+     |----------|-------------------|-----------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
 
 
-     |              Port Output   ||               |                       |
-     |-------|---------------|-------------------|-----------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 0     | M_COORDS      | getResult         | (VECARR3, FLOAT)      |
-     | 10    | M_DISPLS      | getResult         | (VECARR3, FLOAT)      |
-     | 12    | M_FILTER      | getResult         | (VECTOR, FLOAT)       |
-     | 19    | M_SCALARFIELD | getResult         | (VECTOR, FLOAT)       |
-     | 20    | M_POINT       | getResult         | (ARRAY3, FLOAT)       |
-     | 23    | M_SPAN        | getResult         | (ARRAY3, FLOAT)       |
-     | 24    | M_DIMENSION   | getResult         | (ARRAY3, INT)         |
-     | 30    | M_VALUED      | getResult         | (SCALAR, FLOAT)       |
-     | 31    | M_VALUEI      | getResult         | (SCALAR, INT)         |
-     | 32    | M_VALUEB      | getResult         | (SCALAR, BOOL)        |
-     | 40    | M_DEG         | getResult         | (ARRAY3, INT)         |
-     | 50    | M_FILENAME    | getResult         | (SCALAR, STRING)      |
-     | 51    | M_DIR         | getResult         | (SCALAR, STRING)      |
+     |              Port Output   |               |                       |
+     |---------------|-------------------|-----------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_COORDS      | getResult         | (MC_VECARR3, MD_FLOAT)      |
+     | M_DISPLS      | getResult         | (MC_VECARR3, MD_FLOAT)      |
+     | M_FILTER      | getResult         | (MC_VECTOR, MD_FLOAT)       |
+     | M_SCALARFIELD | getResult         | (MC_VECTOR, MD_FLOAT)       |
+     | M_POINT       | getResult         | (MC_ARRAY3, MD_FLOAT)       |
+     | M_SPAN        | getResult         | (MC_ARRAY3, MD_FLOAT)       |
+     | M_DIMENSION   | getResult         | (MC_ARRAY3, MD_INT)         |
+     | M_VALUED      | getResult         | (MC_SCALAR, MD_FLOAT)       |
+     | M_VALUEI      | getResult         | (MC_SCALAR, MD_INT)         |
+     | M_VALUEB      | getResult         | (MC_SCALAR, MD_BOOL)        |
+     | M_DEG         | getResult         | (MC_ARRAY3, MD_INT)         |
+     | M_FILENAME    | getResult         | (MC_SCALAR, MD_STRING)      |
+     | M_DIR         | getResult         | (MC_SCALAR, MD_STRING)      |
 
  *    =========================================================
  * \n

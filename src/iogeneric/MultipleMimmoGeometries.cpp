@@ -115,16 +115,22 @@ MultipleMimmoGeometries & MultipleMimmoGeometries::operator=(const MultipleMimmo
  */
 void
 MultipleMimmoGeometries::buildPorts(){
+    
+    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_MIMMO_);
+    PortManager::instance().addPort(M_MAPGEOM, MC_UN_MAP, MD_STRINGPAIRINTMIMMO_);
+    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_FILEINFODATA);
+    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_FILEINFODATA);
+    
     bool built = true;
-    built = (built && createPortIn<std::vector<MimmoObject*>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setGeometry, PortType::M_VECGEOM, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortIn<std::unordered_map<std::string,std::pair<int, MimmoObject*> >, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setObjMAP, PortType::M_MAPGEOM, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::STRINGPAIRINTMIMMO_));
-    built = (built && createPortIn<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setReadListFDI, PortType::M_FINFO, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FILEINFODATA));
-    built = (built && createPortIn<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setWriteListFDI, PortType::M_FINFO2, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FILEINFODATA));
+    built = (built && createPortIn<std::vector<MimmoObject*>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setGeometry, M_VECGEOM));
+    built = (built && createPortIn<std::unordered_map<std::string,std::pair<int, MimmoObject*> >, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setObjMAP, M_MAPGEOM));
+    built = (built && createPortIn<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setReadListFDI, M_FINFO));
+    built = (built && createPortIn<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setWriteListFDI, M_FINFO2));
 
-    built = (built && createPortOut<std::vector<MimmoObject*>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getGeometry, PortType::M_VECGEOM, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::MIMMO_));
-    built = (built && createPortOut<std::unordered_map<std::string,std::pair<int, MimmoObject*> >, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getObjMAP, PortType::M_MAPGEOM, mimmo::pin::containerTAG::UN_MAP, mimmo::pin::dataTAG::STRINGPAIRINTMIMMO_));
-    built = (built && createPortOut<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getReadListFDI, PortType::M_FINFO, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FILEINFODATA));
-    built = (built && createPortOut<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getWriteListFDI, PortType::M_FINFO2, mimmo::pin::containerTAG::VECTOR, mimmo::pin::dataTAG::FILEINFODATA));
+    built = (built && createPortOut<std::vector<MimmoObject*>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getGeometry, M_VECGEOM));
+    built = (built && createPortOut<std::unordered_map<std::string,std::pair<int, MimmoObject*> >, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getObjMAP, M_MAPGEOM));
+    built = (built && createPortOut<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getReadListFDI, M_FINFO));
+    built = (built && createPortOut<std::vector<FileDataInfo>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::getWriteListFDI, M_FINFO2));
 
     m_arePortsBuilt = built;
 }

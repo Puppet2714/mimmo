@@ -46,27 +46,27 @@ namespace mimmo{
  *
  *	=========================================================
 
- 	|                    Port Input  |||                                   |
- 	|-------|-------------|-------------------|-------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
- 	| 0     | M_COORDS    | setResult         | (VECARR3, FLOAT)        |
- 	| 10    | M_DISPLS    | setResult         | (VECARR3, FLOAT)        |
- 	| 12    | M_FILTER    | setResult         | (VECTOR, FLOAT)         |
- 	| 20    | M_POINT     | setResult         | (ARRAY3, FLOAT)         |
- 	| 24    | M_DIMENSION | setResult         | (ARRAY3, INT)           |
- 	| 30    | M_VALUED    | setResult         | (SCALAR, FLOAT)         |
- 	| 31    | M_VALUEI    | setResult         | (SCALAR, INT)           |
- 	| 32    | M_VALUEB    | setResult         | (SCALAR, BOOL)          |
- 	| 40    | M_DEG       | setResult         | (ARRAY3, INT)           |
- 	| 50    | M_FILENAME  | setResult         | (SCALAR, STRING)        |
- 	| 51    | M_DIR       | setResult         | (SCALAR, STRING)        |
+ 	|                    Port Input  |                                   |
+ 	|-------------|-------------------|-------------------------|
+    | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+    | M_COORDS    | setResult         | (MC_VECARR3, MD_FLOAT)        |
+ 	| M_DISPLS    | setResult         | (MC_VECARR3, MD_FLOAT)        |
+ 	| M_FILTER    | setResult         | (MC_VECTOR, MD_FLOAT)         |
+ 	| M_POINT     | setResult         | (MC_ARRAY3, MD_FLOAT)         |
+ 	| M_DIMENSION | setResult         | (MC_ARRAY3, MD_INT)           |
+ 	| M_VALUED    | setResult         | (MC_SCALAR, MD_FLOAT)         |
+ 	| M_VALUEI    | setResult         | (MC_SCALAR, MD_INT)           |
+ 	| M_VALUEB    | setResult         | (MC_SCALAR, MD_BOOL)          |
+ 	| M_DEG       | setResult         | (MC_ARRAY3, MD_INT)           |
+ 	| M_FILENAME  | setResult         | (MC_SCALAR, MD_STRING)        |
+ 	| M_DIR       | setResult         | (MC_SCALAR, MD_STRING)        |
 
 
 
 
- 	|              Port Output  |||              |
- 	|-------|-------------|---------|----------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+ 	|              Port Output  ||              |
+ 	|--------------|---------|----------|
+    |<B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
 
  *	=========================================================
  *

@@ -67,22 +67,22 @@ namespace mimmo{
  *
  *    =========================================================
 
-     |                 Port Input   |||                                       |
-     |-------|----------|------------------|-------------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 100   | M_VECGEOM| setGeometry      | (VECTOR, MIMMO_)              |
-     | 101   | M_MAPGEOM| setObjMap        | (UN_MAP, STRINGPAIRINTMIMMO_) |
-     | 102   | M_FINFO  | setReadListFDI   | (VECTOR, FILEINFODATA)        |
-     | 103   | M_FINFO2 | setWriteListFDI  | (VECTOR, FILEINFODATA)        |
+     |                 Port Input   ||                                       |
+     |----------|------------------|-------------------------------|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_VECGEOM| setGeometry      | (MC_VECTOR, MD_MIMMO_)              |
+     | M_MAPGEOM| setObjMap        | (MC_UN_MAP, MD_STRINGPAIRINTMIMMO_) |
+     | M_FINFO  | setReadListFDI   | (MC_VECTOR, MD_FILEINFODATA)        |
+     | M_FINFO2 | setWriteListFDI  | (MC_VECTOR, MD_FILEINFODATA)        |
 
 
-     |            Port Output    ||            |                              |
-     |-------|-----------|-------------------|------------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 100   | M_VECGEOM | getGeometry       | (VECTOR, MIMMO_)             |
-     | 101   | M_MAPGEOM | getObjMap         | (UN_MAP, STRINGPAIRINTMIMMO_)|
-     | 102   | M_FINFO   | getReadListFDI    | (VECTOR, FILEINFODATA)       |
-     | 103   | M_FINFO2  | getWriteListFDI   | (VECTOR, FILEINFODATA)       |
+     |            Port Output    ||                              |
+     |-----------|-------------------|------------------------------|
+     |<B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_VECGEOM | getGeometry       | (MC_VECTOR, MD_MIMMO_)             |
+     | M_MAPGEOM | getObjMap         | (MC_UN_MAP, MD_STRINGPAIRINTMIMMO_)|
+     | M_FINFO   | getReadListFDI    | (MC_VECTOR, MD_FILEINFODATA)       |
+     | M_FINFO2  | getWriteListFDI   | (MC_VECTOR, MD_FILEINFODATA)       |
 
  *    =========================================================
  *
