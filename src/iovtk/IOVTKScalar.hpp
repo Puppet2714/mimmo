@@ -51,21 +51,21 @@ namespace mimmo{
  *
  *  =========================================================
 
-   |                     Port Input    |||                                    |
-   |-------|------------------|---------------------|----------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-   | 19    | M_SCALARFIELD    | setField            | (VECTOR, FLOAT)      |
-   | 30    | M_VALUED         | setScaling          | (SCALAR, FLOAT)      |
-   | 99    | M_GEOM           | setGeometry         | (SCALAR, MIMMO_)     |
-   | 1100  | M_POLYDATA_      | setPolyData         | (SCALAR, POLYDATA_)  |
+   |                     Port Input    ||                                    |
+   |------------------|---------------------|----------------------|
+   | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+   | M_SCALARFIELD    | setField            | (MC_VECTOR, MD_FLOAT)      |
+   | M_VALUED         | setScaling          | (MC_SCALAR, MD_FLOAT)      |
+   | M_GEOM           | setGeometry         | (MC_SCALAR, MD_MIMMO_)     |
+   | M_POLYDATA_      | setPolyData         | (MC_SCALAR, MD_POLYDATA_)  |
 
 
-   |               Port Output    |||                                         |
-   |-------|------------------|-------------------|------------------------|
-    |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-   | 19    | M_SCALARFIELD    | getField          | (VECTOR, FLOAT)        |
-   | 99    | M_GEOM           | getGeometry       | (SCALAR, MIMMO_)       |
-   | 1100  | M_POLYDATA_      | getPolyData       | (SCALAR, POLYDATA_)    |
+   |               Port Output    ||                                         |
+   |------------------|-------------------|------------------------|
+   | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+   | M_SCALARFIELD    | getField          | (MC_VECTOR, MD_FLOAT)        |
+   | M_GEOM           | getGeometry       | (MC_SCALAR, MD_MIMMO_)       |
+   | M_POLYDATA_      | getPolyData       | (MC_SCALAR, MD_POLYDATA_)    |
 
  *  =========================================================
  * \n
