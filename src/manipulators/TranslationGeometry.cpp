@@ -79,6 +79,14 @@ TranslationGeometry & TranslationGeometry::operator=(const TranslationGeometry &
  */
 void
 TranslationGeometry::buildPorts(){
+    
+    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
+    PortManager::instance().addPort(M_AXIS, MC_ARRAY3, MD_FLOAT);
+    PortManager::instance().addPort(M_VALUED, MC_SCALAR, MD_FLOAT);
+    PortManager::instance().addPort(M_FILTER, MC_VECTOR, MD_FLOAT);
+    PortManager::instance().addPort(M_GDISPLS, MC_VECARR3, MD_FLOAT);
+    PortManager::instance().addPort(M_PAIRVECFIELD, MC_PAIR, MD_MIMMO_VECARR3FLOAT_);
+    
     bool built = true;
     built = (built && createPortIn<darray3E, TranslationGeometry>(&m_direction, M_AXIS));
     built = (built && createPortIn<double, TranslationGeometry>(&m_alpha, M_VALUED));

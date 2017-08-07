@@ -46,14 +46,14 @@ namespace mimmo{
  *
  *    =========================================================
  * 
-     | Port Input | | | |                                                             
-     |-|-|-|-|
-     |<B>PortID</B> | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
-     | 107   | M_UMGEOVFD| setInputList      | (UMAP, MIMMO_VECARR3FLOAT_) |
+     | Port Input | | |
+     |-|-|-|
+     | <B>PortType</B>   | <B>variable/function</B>  |<B>DataType</B> |
+     | M_UMGEOVFD| setInputList      | (MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_) |
  
-     |Port Output | | | |
-     |-|-|-|-|
-     |<B>PortID</B> | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>| 
+     |Port Output | | |
+     |-|-|-|
+     | <B>PortType</B> | <B>variable/function</B> |<B>DataType</B>| 
 
  *    =========================================================
  * \n
