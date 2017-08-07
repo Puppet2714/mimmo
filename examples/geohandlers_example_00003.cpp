@@ -140,18 +140,18 @@ void test00003() {
 
     /* Setup pin connections.
      */
-    addPin(mimmo0, mapSel1, PortType::M_GEOM, PortType::M_GEOM);
-    addPin(mimmo0, mapSel2, PortType::M_GEOM, PortType::M_GEOM);
-    addPin(mimmo0, applier, PortType::M_GEOM, PortType::M_GEOM);
-    addPin(mimmo1, mapSel1, PortType::M_GEOM, PortType::M_GEOM2);
-    addPin(mimmo2, mapSel2, PortType::M_GEOM, PortType::M_GEOM2);
-    addPin(mapSel1, mrbf1, PortType::M_GEOM, PortType::M_GEOM);
-    addPin(mapSel2, mrbf2, PortType::M_GEOM, PortType::M_GEOM);
-    addPin(mimmo0, recon, PortType::M_GEOM, PortType::M_GEOM);
-    addPin(mrbf1, recon, PortType::M_PAIRVECFIELD, PortType::M_PAIRVECFIELD);
-    addPin(mrbf2, recon, PortType::M_PAIRVECFIELD, PortType::M_PAIRVECFIELD);
-    addPin(recon, applier, PortType::M_GDISPLS, PortType::M_GDISPLS);
-    addPin(applier, mimmo3, PortType::M_GEOM, PortType::M_GEOM);
+    addPin(mimmo0, mapSel1, M_GEOM, M_GEOM);
+    addPin(mimmo0, mapSel2, M_GEOM, M_GEOM);
+    addPin(mimmo0, applier, M_GEOM, M_GEOM);
+    addPin(mimmo1, mapSel1, M_GEOM, M_GEOM2);
+    addPin(mimmo2, mapSel2, M_GEOM, M_GEOM2);
+    addPin(mapSel1, mrbf1, M_GEOM, M_GEOM);
+    addPin(mapSel2, mrbf2, M_GEOM, M_GEOM);
+    addPin(mimmo0, recon, M_GEOM, M_GEOM);
+    addPin(mrbf1, recon, M_PAIRVECFIELD, M_PAIRVECFIELD);
+    addPin(mrbf2, recon, M_PAIRVECFIELD, M_PAIRVECFIELD);
+    addPin(recon, applier, M_GDISPLS, M_GDISPLS);
+    addPin(applier, mimmo3, M_GEOM, M_GEOM);
 
 
     /* Setup execution chain.
