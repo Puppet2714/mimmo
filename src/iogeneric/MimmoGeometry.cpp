@@ -97,9 +97,6 @@ MimmoGeometry & MimmoGeometry::operator=(const MimmoGeometry & other){
  */
 void
 MimmoGeometry::buildPorts(){
-    
-    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
-    
     bool built = true;
     built = (built && createPortIn<MimmoObject*, MimmoGeometry>(this, &mimmo::MimmoGeometry::setGeometry, M_GEOM));
     built = (built && createPortOut<MimmoObject*, MimmoGeometry>(this, &mimmo::MimmoGeometry::getGeometry, M_GEOM));

@@ -280,10 +280,6 @@ OverlapVectorFields::clear(){
 void
 OverlapVectorFields::buildPorts(){
 
-    PortManager::instance().addPort(M_PAIRVECFIELD, MC_PAIR, MD_MIMMO_VECARR3FLOAT_);
-    PortManager::instance().addPort(M_UMGEOVFD, MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_);
-    PortManager::instance().addPort(M_VECPAIRVF, MC_VECTOR, MD_PAIRMIMMO_VECARR3FLOAT_);
-    
     bool built = true;
 
     //input

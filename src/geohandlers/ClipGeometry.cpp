@@ -88,12 +88,6 @@ ClipGeometry & ClipGeometry::operator=(const ClipGeometry & other){
 void
 ClipGeometry::buildPorts(){
    
-    PortManager::instance().addPort(M_PLANE, MC_ARRAY4, MD_FLOAT);
-    PortManager::instance().addPort(M_POINT, MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_AXIS, MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_VALUEB, MC_SCALAR, MD_BOOL);
-    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
-    
     bool built = true;
 
     built = (built && createPortIn<darray4E, ClipGeometry>(this, &mimmo::ClipGeometry::setClipPlane, M_PLANE));

@@ -108,12 +108,6 @@ StitchGeometry & StitchGeometry::operator=(const StitchGeometry & other){
  */
 void
 StitchGeometry::buildPorts(){
-    
-    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
-    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_MIMMO_);
-    PortManager::instance().addPort(M_MAPDCELL, MC_UN_MAP, MD_LONGPAIRINTLONG);
-    PortManager::instance().addPort(M_MAPDVERT, MC_UN_MAP, MD_LONGPAIRINTLONG);
-    
     bool built = true;
     built = (built && createPortIn<std::vector<MimmoObject*>, StitchGeometry>(this, &mimmo::StitchGeometry::setGeometry, M_VECGEOM));
     built = (built && createPortIn<MimmoObject*, StitchGeometry>(this, &mimmo::StitchGeometry::setAddGeometry, M_GEOM));

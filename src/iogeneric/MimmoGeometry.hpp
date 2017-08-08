@@ -291,6 +291,7 @@ public:
     }
 };
 
+REGISTER_PORT(M_GEOM, MC_SCALAR, MD_MIMMO_, __MIMMOGEOMETRY_HPP__)
 REGISTER(BaseManipulation, MimmoGeometry, "mimmo.Geometry")
 
 };

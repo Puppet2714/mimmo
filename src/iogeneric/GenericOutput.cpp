@@ -95,19 +95,6 @@ GenericOutput & GenericOutput::operator=(const GenericOutput & other){
 void
 GenericOutput::buildPorts(){
 
-    PortManager::instance().addPort(M_COORDS, MC_VECARR3, MD_FLOAT);
-    PortManager::instance().addPort(M_DISPLS, MC_VECARR3, MD_FLOAT);
-    PortManager::instance().addPort(M_FILTER, MC_VECTOR, MD_FLOAT);
-    PortManager::instance().addPort(M_POINT,  MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_DIMENSION, MC_ARRAY3, MD_INT);
-    PortManager::instance().addPort(M_VALUED, MC_SCALAR, MD_FLOAT);
-    PortManager::instance().addPort(M_VALUEI, MC_SCALAR, MD_INT);
-    PortManager::instance().addPort(M_VALUEB, MC_SCALAR, MD_BOOL);
-    PortManager::instance().addPort(M_DEG, MC_SCALAR, MD_INT);
-    PortManager::instance().addPort(M_FILENAME, MC_SCALAR, MD_STRING);
-    PortManager::instance().addPort(M_DIR, MC_SCALAR, MD_STRING);
-    
-    
     bool built = true;
     built = (built && createPortIn<dvecarr3E, GenericOutput>(this, &mimmo::GenericOutput::setInput<dvecarr3E>, M_COORDS));
     built = (built && createPortIn<dvecarr3E, GenericOutput>(this, &mimmo::GenericOutput::setInput<dvecarr3E>, M_DISPLS));

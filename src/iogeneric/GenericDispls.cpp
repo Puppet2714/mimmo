@@ -106,10 +106,6 @@ GenericDispls & GenericDispls::operator=(const GenericDispls & other){
 void
 GenericDispls::buildPorts(){
 
-    PortManager::instance().addPort(M_DISPLS, MC_VECARR3, MD_FLOAT);
-    PortManager::instance().addPort(M_VECTORLI, MC_VECTOR, MD_LONG);
-    PortManager::instance().addPort(M_VALUEI, MC_SCALAR, MD_INT);
-    
     bool built = true;
 
     built = (built && createPortIn<dvecarr3E, GenericDispls>(this, &mimmo::GenericDispls::setDispl, M_DISPLS));

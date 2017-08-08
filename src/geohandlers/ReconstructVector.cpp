@@ -412,12 +412,6 @@ ReconstructVector::checkOverlapping(){
 void
 ReconstructVector::buildPorts(){
 
-    PortManager::instance().addPort(M_PAIRVECFIELD, MC_PAIR, MD_MIMMO_VECARR3FLOAT_);
-    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
-    PortManager::instance().addPort(M_VECPAIRVF, MC_VECTOR, MD_PAIRMIMMO_VECARR3FLOAT_);
-    PortManager::instance().addPort(M_GDISPLS, MC_VECARR3, MD_FLOAT);
-    
-    
     bool built = true;
 
     //input

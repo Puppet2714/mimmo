@@ -77,11 +77,6 @@ TranslationPoint & TranslationPoint::operator=(const TranslationPoint & other){
  */
 void
 TranslationPoint::buildPorts(){
-    
-    PortManager::instance().addPort(M_POINT, MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_AXIS, MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_VALUED, MC_SCALAR, MD_FLOAT);
-    
     bool built = true;
     built = (built && createPortIn<darray3E, TranslationPoint>(&m_origin, M_POINT));
     built = (built && createPortIn<darray3E, TranslationPoint>(&m_direction, M_AXIS));

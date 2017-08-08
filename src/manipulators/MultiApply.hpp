@@ -91,6 +91,7 @@ public:
     virtual void flushSectionXML(bitpit::Config::Section & slotXML, std::string name="");
 };
 
+REGISTER_PORT(M_UMGEOVFD, MC_UN_MAP, MD_MIMMO_VECARR3FLOAT_, __MULTIAPPLYDEFORMATION_HPP__)
 REGISTER(BaseManipulation, MultiApply, "mimmo.MultiApply")
 
 };

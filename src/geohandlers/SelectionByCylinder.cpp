@@ -99,12 +99,6 @@ SelectionByCylinder & SelectionByCylinder::operator=(const SelectionByCylinder &
 void
 SelectionByCylinder::buildPorts(){
 
-    PortManager::instance().addPort(M_POINT, MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_AXES, MC_ARR3ARR3, MD_FLOAT);
-    PortManager::instance().addPort(M_SPAN, MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_INFLIMITS, MC_ARRAY3, MD_FLOAT);
-    
-
     bool built = true;
 
     GenericSelection::buildPorts();

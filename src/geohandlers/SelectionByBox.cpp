@@ -95,10 +95,6 @@ SelectionByBox & SelectionByBox::operator=(const SelectionByBox & other){
 void
 SelectionByBox::buildPorts(){
 
-    PortManager::instance().addPort(M_POINT, MC_ARRAY3, MD_FLOAT);
-    PortManager::instance().addPort(M_AXES, MC_ARR3ARR3, MD_FLOAT);
-    PortManager::instance().addPort(M_SPAN, MC_ARRAY3, MD_FLOAT);
-    
     bool built = true;
 
     GenericSelection::buildPorts();

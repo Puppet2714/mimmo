@@ -89,6 +89,9 @@ public:
     virtual void flushSectionXML(bitpit::Config::Section & slotXML, std::string name="");
 };
 
+REGISTER_PORT(M_GDISPLS, MC_VECARR3, MD_FLOAT, __APPLYDEFORMATION_HPP__)
+REGISTER_PORT(M_GEOM, MC_SCALAR, MD_MIMMO_, __APPLYDEFORMATION_HPP__)
+
 REGISTER(BaseManipulation, Apply, "mimmo.Apply")
 
 };

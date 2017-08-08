@@ -86,9 +86,6 @@ CGNSPidExtractor & CGNSPidExtractor::operator=(const CGNSPidExtractor & other){
  */
 void
 CGNSPidExtractor::buildPorts(){
-    
-    PortManager::instance().addPort(M_GEOM, MC_SCALAR, MD_MIMMO_);
-    
     bool built = true;
     built = (built && createPortIn<MimmoObject*, CGNSPidExtractor>(this, &CGNSPidExtractor::setGeometry, M_GEOM, true));
 

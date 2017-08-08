@@ -280,10 +280,6 @@ OverlapScalarFields::clear(){
 void
 OverlapScalarFields::buildPorts(){
 
-    PortManager::instance().addPort(M_PAIRSCAFIELD, MC_PAIR, MD_MIMMO_VECFLOAT_);
-    PortManager::instance().addPort(M_UMGEOSFD, MC_UN_MAP, MD_MIMMO_VECFLOAT_);
-    PortManager::instance().addPort(M_VECPAIRSF, MC_VECTOR, MD_PAIRMIMMO_VECFLOAT_);
-
     bool built = true;
 
     //input

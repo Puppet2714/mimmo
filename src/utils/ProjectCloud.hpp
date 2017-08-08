@@ -96,6 +96,10 @@ protected:
 
 };
 
+REGISTER_PORT(M_GEOM, MC_SCALAR, MD_MIMMO_,__PROJECTCLOUD_HPP__)
+REGISTER_PORT(M_COORDS, MC_VECARR3, MD_FLOAT,__PROJECTCLOUD_HPP__)
+
+
 REGISTER(BaseManipulation, ProjectCloud,"mimmo.ProjectCloud")
 
 };

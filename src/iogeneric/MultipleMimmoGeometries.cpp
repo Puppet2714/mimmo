@@ -115,12 +115,6 @@ MultipleMimmoGeometries & MultipleMimmoGeometries::operator=(const MultipleMimmo
  */
 void
 MultipleMimmoGeometries::buildPorts(){
-    
-    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_MIMMO_);
-    PortManager::instance().addPort(M_MAPGEOM, MC_UN_MAP, MD_STRINGPAIRINTMIMMO_);
-    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_FILEINFODATA);
-    PortManager::instance().addPort(M_VECGEOM, MC_VECTOR, MD_FILEINFODATA);
-    
     bool built = true;
     built = (built && createPortIn<std::vector<MimmoObject*>, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setGeometry, M_VECGEOM));
     built = (built && createPortIn<std::unordered_map<std::string,std::pair<int, MimmoObject*> >, MultipleMimmoGeometries>(this, &mimmo::MultipleMimmoGeometries::setObjMAP, M_MAPGEOM));
