@@ -12,6 +12,9 @@ This library _tries_ to adhere to [Semantic Versioning](http://semver.org/).
 - fixed coverity issues
 - update CreateSeedOnSurface block: added sensitivity map option to drive the seeding. 
 - added global expert mode MIMMO_EXPERT to override mandatory ports checking in execution of chains
+- Ports management: enum PortType, containerTAG and datatypeTAG are disimissed
+- Ports management: created new static singleton PortManager for on-the fly ports registration.
+- Ports management: added a C macro REGISTER_PORT for compile-time ports registration.
 
 ### Added
 - This CHANGELOG file.
